@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mots de la Dictée - CM1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A90A4;
+            --primary-light: #6BB3C9;
+            --secondary: #F5A623;
+            --success: #7CB342;
+            --warning: #FF9800;
+            --danger: #E57373;
+            --bg-cream: #FFF9F0;
+            --bg-light: #F0F7FA;
+            --text-dark: #2C3E50;
+            --text-medium: #5D6D7E;
+            --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-medium: 0 6px 25px rgba(0,0,0,0.12);
+            --radius-small: 12px;
+            --radius-medium: 16px;
+            --radius-large: 24px;
+            --level-1: #7CB342; --level-1-light: #AED581;
+            --level-2: #FF9800; --level-2-light: #FFCC80;
+            --level-3: #E57373; --level-3-light: #FFCDD2;
+            --period-1: #81D4FA; --period-2: #A5D6A7; --period-3: #FFE082; --period-4: #FFAB91; --period-5: #CE93D8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-light) 100%); min-height: 100vh; color: var(--text-dark); line-height: 1.6; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 20px; text-align: center; box-shadow: var(--shadow-medium); position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-family: 'Fredoka One', cursive; color: white; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .breadcrumb { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .breadcrumb-item { background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 20px; font-weight: 600; color: var(--primary); cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+        .breadcrumb-item:hover { background: white; transform: scale(1.05); }
+        .breadcrumb-separator { color: white; font-size: 1.1rem; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px 15px; }
+        .welcome-message { text-align: center; margin-bottom: 35px; padding: 25px; background: white; border-radius: var(--radius-large); box-shadow: var(--shadow-soft); }
+        .welcome-message h2 { font-family: 'Fredoka One', cursive; color: var(--primary); font-size: 1.6rem; margin-bottom: 12px; }
+        .welcome-message p { font-size: 1.1rem; color: var(--text-medium); }
+        .welcome-icon { font-size: 3.5rem; margin-bottom: 12px; }
+        .periods-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 25px; }
+        .period-card { background: white; border-radius: var(--radius-large); padding: 25px 18px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-soft); border: 4px solid transparent; position: relative; overflow: hidden; }
+        .period-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .period-card[data-period="1"]::before { background: var(--period-1); }
+        .period-card[data-period="2"]::before { background: var(--period-2); }
+        .period-card[data-period="3"]::before { background: var(--period-3); }
+        .period-card[data-period="4"]::before { background: var(--period-4); }
+        .period-card[data-period="5"]::before { background: var(--period-5); }
+        .period-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .period-card[data-period="1"]:hover { border-color: var(--period-1); }
+        .period-card[data-period="2"]:hover { border-color: var(--period-2); }
+        .period-card[data-period="3"]:hover { border-color: var(--period-3); }
+        .period-card[data-period="4"]:hover { border-color: var(--period-4); }
+        .period-card[data-period="5"]:hover { border-color: var(--period-5); }
+        .period-card .icon { font-size: 3rem; margin-bottom: 12px; }
+        .period-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--text-dark); }
+        .period-card .subtitle { font-size: 0.85rem; color: var(--text-medium); margin-top: 6px; }
+        .period-card.disabled { opacity: 0.5; cursor: not-allowed; }
+        .period-card.disabled:hover { transform: none; box-shadow: var(--shadow-soft); border-color: transparent; }
+        .coming-soon-badge { background: var(--warning); color: white; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; margin-top: 8px; display: inline-block; }
+        .weeks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-top: 25px; }
+        .week-card { background: white; border-radius: var(--radius-medium); padding: 20px 12px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-soft); border: 3px solid transparent; }
+        .week-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-medium); border-color: var(--secondary); }
+        .week-card .icon { font-size: 2.2rem; margin-bottom: 8px; }
+        .week-card h4 { font-weight: 700; font-size: 1rem; color: var(--text-dark); }
+        .week-card .theme { font-size: 0.8rem; color: var(--text-medium); margin-top: 4px; }
+        .section-title { text-align: center; margin-bottom: 25px; }
+        .section-title h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .section-title p { color: var(--text-medium); font-size: 1rem; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 35px; }
+        .game-card { background: white; border-radius: var(--radius-large); padding: 22px 14px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-soft); border: 3px solid transparent; }
+        .game-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-medium); border-color: var(--secondary); }
+        .game-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .game-card h4 { font-weight: 700; font-size: 0.95rem; color: var(--text-dark); line-height: 1.3; }
+        .words-section { background: white; border-radius: var(--radius-large); padding: 25px; box-shadow: var(--shadow-soft); margin-top: 35px; overflow-x: auto; }
+        .words-section h3 { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--primary); margin-bottom: 18px; text-align: center; }
+        .method-card { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: var(--radius-large); padding: 20px 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-medium); margin-bottom: 25px; }
+        .method-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(17, 153, 142, 0.4); }
+        .method-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: white; margin: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .method-card .subtitle { color: rgba(255,255,255,0.9); font-size: 0.95rem; margin-top: 8px; }
+        .method-card .arrow { font-size: 1.5rem; transition: transform 0.3s ease; }
+        .method-card.open .arrow { transform: rotate(180deg); }
+        .method-content { display: none; background: white; border-radius: var(--radius-large); padding: 30px; box-shadow: var(--shadow-soft); margin-bottom: 25px; }
+        .method-content.visible { display: block; }
+        .method-step { display: flex; align-items: flex-start; gap: 15px; padding: 18px; margin-bottom: 15px; border-radius: var(--radius-medium); transition: all 0.2s ease; }
+        .method-step:nth-child(1) { background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%); border-left: 5px solid #e53935; }
+        .method-step:nth-child(2) { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left: 5px solid #FF9800; }
+        .method-step:nth-child(3) { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left: 5px solid #4CAF50; }
+        .method-step:nth-child(4) { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 5px solid #2196F3; }
+        .method-step:nth-child(5) { background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left: 5px solid #9C27B0; }
+        .method-step:nth-child(6) { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); border-left: 5px solid #E91E63; }
+        .method-step:nth-child(7) { background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); border-left: 5px solid #00BCD4; }
+        .method-step:nth-child(8) { background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left: 5px solid #FF5722; }
+        .method-step .step-icon { font-size: 2.5rem; flex-shrink: 0; }
+        .method-step .step-content { flex: 1; }
+        .method-step .step-title { font-family: 'Fredoka One', cursive; font-size: 1.15rem; color: var(--text-dark); margin-bottom: 5px; }
+        .method-step .step-text { font-size: 1rem; color: var(--text-medium); line-height: 1.5; }
+        .method-reminder { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border: 3px solid #e53935; border-radius: var(--radius-large); padding: 20px 25px; margin-top: 20px; }
+        .method-reminder h4 { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: #c62828; margin-bottom: 15px; text-align: center; }
+        .method-reminder ul { list-style: none; padding: 0; margin: 0; }
+        .method-reminder li { font-size: 1.05rem; color: var(--text-dark); padding: 8px 0; display: flex; align-items: center; gap: 10px; }
+        .method-reminder li::before { content: '✔️'; font-size: 1.2rem; }
+        .fiche-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: var(--radius-large); padding: 20px 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-medium); margin-bottom: 25px; }
+        .fiche-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4); }
+        .fiche-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: white; margin: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .fiche-card .subtitle { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-top: 8px; }
+        .fiche-card .arrow { font-size: 1.5rem; transition: transform 0.3s ease; }
+        .fiche-card.open .arrow { transform: rotate(180deg); }
+        .fiche-content { display: none; background: white; border-radius: var(--radius-large); padding: 25px; box-shadow: var(--shadow-soft); margin-bottom: 25px; animation: slideDown 0.3s ease; }
+        .fiche-content.visible { display: block; }
+        .words-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .words-table th { background: var(--primary); color: white; padding: 12px 10px; text-align: left; font-weight: 700; }
+        .words-table th:first-child { border-radius: 10px 0 0 0; }
+        .words-table th:last-child { border-radius: 0 10px 0 0; }
+        .words-table td { padding: 10px; border-bottom: 1px solid #E8E8E8; }
+        .words-table tr:nth-child(even) { background: var(--bg-light); }
+        .word-type { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .word-type.nom { background: #C8E6C9; color: #2E7D32; }
+        .word-type.verbe { background: #e53935; color: white; }
+        .word-type.adjectif { background: #FF9800; color: white; }
+        .word-type.invariable { background: #9C27B0; color: white; }
+        .word-type.determinant { background: #1565C0; color: white; }
+        .word-type.pronom { background: #B3E5FC; color: #0277BD; }
+        .word-clickable { cursor: pointer; color: var(--primary); transition: all 0.2s ease; font-size: 1.05rem; }
+        .word-clickable:hover { color: var(--secondary); text-decoration: underline; }
+        .exemple-box { display: none; background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 100%); border: 2px solid var(--secondary); padding: 12px 18px; margin-top: 8px; border-radius: 12px; font-style: italic; color: var(--text-dark); font-size: 1rem; }
+        .exemple-box.visible { display: block; }
+        .exemple-box::before { content: '💬 '; }
+        .types-container { display: flex; gap: 5px; flex-wrap: wrap; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .game-page { background: white; border-radius: var(--radius-large); padding: 25px; box-shadow: var(--shadow-soft); }
+        .game-header { text-align: center; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 2px dashed #E8E8E8; }
+        .game-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .game-instruction { background: var(--bg-light); padding: 12px 18px; border-radius: var(--radius-medium); font-size: 1rem; color: var(--text-medium); margin-bottom: 18px; }
+        .level-selector { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
+        .level-btn { padding: 10px 24px; border: none; border-radius: 22px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; }
+        .level-btn.level-1 { background: var(--level-1-light); color: #33691E; }
+        .level-btn.level-1:hover, .level-btn.level-1.active { background: var(--level-1); color: white; transform: scale(1.05); }
+        .level-btn.level-2 { background: var(--level-2-light); color: #E65100; }
+        .level-btn.level-2:hover, .level-btn.level-2.active { background: var(--level-2); color: white; transform: scale(1.05); }
+        .level-btn.level-3 { background: var(--level-3-light); color: #B71C1C; }
+        .level-btn.level-3:hover, .level-btn.level-3.active { background: var(--level-3); color: white; transform: scale(1.05); }
+        .game-area { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn { padding: 10px 22px; border: none; border-radius: 22px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); transform: scale(1.05); }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-secondary:hover { background: #F5B942; transform: scale(1.05); }
+        .btn-back { background: #E8E8E8; color: var(--text-dark); margin-top: 18px; }
+        .btn-back:hover { background: #D0D0D0; }
+        .hangman-word { font-family: 'Fredoka One', cursive; font-size: 2.2rem; letter-spacing: 12px; color: var(--primary); margin: 25px 0; word-break: break-all; }
+        .hangman-lives { font-size: 1.8rem; margin-bottom: 15px; }
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 450px; }
+        .key-btn { width: 40px; height: 40px; border: none; border-radius: 8px; background: var(--bg-light); font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
+        .key-btn:hover:not(:disabled) { background: var(--primary); color: white; transform: scale(1.1); }
+        .key-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .key-btn.correct { background: var(--success); color: white; }
+        .key-btn.wrong { background: var(--danger); color: white; }
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 420px; margin: 18px auto; }
+        .memory-card { aspect-ratio: 1; background: var(--primary); border-radius: var(--radius-medium); cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; min-height: 70px; }
+        .memory-card.flipped { background: white; border: 3px solid var(--primary); }
+        .memory-card.flipped .card-content { display: flex; }
+        .memory-card.matched { background: var(--success); border-color: var(--success); }
+        .memory-card .card-content { display: none; font-size: 0.75rem; color: var(--text-dark); text-align: center; padding: 6px; font-weight: 600; word-break: break-word; }
+        .memory-card .card-back { font-size: 1.8rem; }
+        .memory-card.flipped .card-back { display: none; }
+        .race-track { width: 100%; height: 70px; background: linear-gradient(to right, #C8E6C9, #A5D6A7); border-radius: 35px; position: relative; margin: 25px 0; overflow: hidden; border: 3px solid #81C784; }
+        .race-runner { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); font-size: 2.2rem; transition: left 0.3s ease; }
+        .race-finish { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); font-size: 1.8rem; }
+        .race-word { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--primary); margin: 18px 0; }
+        .race-input { padding: 12px 22px; font-size: 1.2rem; border: 3px solid var(--primary); border-radius: 12px; font-family: 'Nunito', sans-serif; text-align: center; width: 280px; max-width: 100%; }
+        .race-input:focus { outline: none; border-color: var(--secondary); }
+        .race-timer { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--warning); }
+        .anagram-letters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0; }
+        .letter-tile { width: 44px; height: 44px; background: var(--secondary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
+        .letter-tile:hover:not(.used) { transform: scale(1.1); background: var(--primary); }
+        .letter-tile.used { opacity: 0.3; cursor: not-allowed; }
+        .answer-zone { min-height: 55px; border: 3px dashed var(--primary); border-radius: 12px; padding: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 18px 0; min-width: 220px; }
+        .answer-letter { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-size: 1.2rem; cursor: pointer; text-transform: uppercase; }
+        .qcm-sentence { font-size: 1.2rem; text-align: center; margin: 25px 0; line-height: 1.7; }
+        .qcm-blank { display: inline-block; min-width: 100px; border-bottom: 3px solid var(--primary); margin: 0 4px; }
+        .qcm-options { display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 0 auto; }
+        .qcm-option { padding: 12px 22px; background: var(--bg-light); border: 3px solid transparent; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .qcm-option:hover { border-color: var(--primary); background: white; }
+        .qcm-option.correct { background: var(--success); color: white; border-color: var(--success); }
+        .qcm-option.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+        .quiz-word { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--primary); margin: 25px 0; }
+        .nature-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+        .nature-btn { padding: 12px 25px; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+        .nature-btn.nom { background: #C8E6C9; color: #2E7D32; }
+        .nature-btn.verbe { background: #e53935; color: white; }
+        .nature-btn.adjectif { background: #FF9800; color: white; }
+        .nature-btn.invariable { background: #9C27B0; color: white; }
+        .nature-btn:hover { transform: scale(1.05); box-shadow: var(--shadow-medium); }
+        .nature-btn.correct { background: var(--success) !important; color: white !important; }
+        .nature-btn.wrong { background: var(--danger) !important; color: white !important; }
+        .crossword-container { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        .crossword-grid { display: grid; gap: 2px; background: var(--text-dark); padding: 2px; border-radius: 6px; }
+        .crossword-cell { width: 36px; height: 36px; background: white; border: none; text-align: center; font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+        .crossword-cell:focus { outline: 3px solid var(--secondary); }
+        .crossword-cell.blocked { background: var(--text-dark); }
+        .crossword-cell.given { background: var(--bg-light); color: var(--primary); }
+        .crossword-clues { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
+        .clue-group h4 { color: var(--primary); margin-bottom: 8px; font-size: 1rem; }
+        .clue-item { font-size: 0.85rem; margin-bottom: 6px; padding-left: 8px; }
+        .catch-game { width: 100%; height: 350px; background: linear-gradient(to bottom, #87CEEB 0%, #B3E5FC 50%, #E1F5FE 100%); border-radius: var(--radius-large); position: relative; overflow: hidden; }
+        .falling-word { position: absolute; padding: 10px 18px; background: white; border-radius: 20px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: var(--shadow-soft); user-select: none; z-index: 10; }
+        .falling-word:hover { transform: scale(1.1); background: #ffffcc; }
+        .falling-word.correct { background: var(--success) !important; color: white; }
+        .falling-word.wrong { background: var(--danger) !important; color: white; }
+        .catch-score { position: absolute; top: 12px; right: 15px; background: white; padding: 8px 16px; border-radius: 18px; font-weight: 700; font-size: 1.1rem; }
+        .catch-timer { position: absolute; top: 12px; left: 15px; background: white; padding: 8px 16px; border-radius: 18px; font-weight: 700; font-size: 1.1rem; }
+        .score-display { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--primary); margin: 12px 0; }
+        .feedback { padding: 18px 25px; border-radius: var(--radius-medium); font-size: 1.2rem; font-weight: 700; text-align: center; margin: 18px 0; }
+        .feedback.success { background: #E8F5E9; color: #2E7D32; }
+        .feedback.error { background: #FFEBEE; color: #C62828; }
+        .feedback.info { background: #E3F2FD; color: #1565C0; }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.4rem; }
+            .periods-grid, .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .memory-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .hangman-word { font-size: 1.6rem; letter-spacing: 8px; }
+            .key-btn { width: 34px; height: 34px; font-size: 0.95rem; }
+            .words-table { font-size: 0.8rem; }
+            .words-table th, .words-table td { padding: 6px 4px; }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>📚 MOTS DE LA DICTÉE – CM1</h1>
+        <div class="breadcrumb" id="breadcrumb">
+            <span class="breadcrumb-item" onclick="goHome()">🏠 Accueil</span>
+        </div>
+    </header>
+    <main class="container" id="main-content"></main>
+    <script>
+// ==================== DONNÉES ====================
+const periodsData = {
+    1: { 
+        name: "Période 1", icon: "🍂", available: true,
+        weeks: {
+            1: { theme: "La rentrée", words: [
+                { word: "un cahier", type: "determinant+nom", definition: "Carnet avec des pages pour écrire", exemple: "J'écris mes leçons dans mon cahier." },
+                { word: "le sport", type: "determinant+nom", definition: "Activité physique", exemple: "On fait du sport le mardi." },
+                { word: "les devoirs", type: "determinant+nom", definition: "Travail à faire à la maison", exemple: "Je fais mes devoirs après l'école." },
+                { word: "un enseignant", type: "determinant+nom", definition: "Personne qui enseigne, professeur", exemple: "L'enseignant explique la leçon." },
+                { word: "le travail", type: "determinant+nom", definition: "Ce qu'on doit faire, activité", exemple: "Le travail en classe est important." },
+                { word: "un exercice", type: "determinant+nom", definition: "Activité pour s'entraîner", exemple: "Je fais un exercice de maths." },
+                { word: "une opération", type: "determinant+nom", definition: "Calcul (addition, soustraction...)", exemple: "Cette opération est facile." },
+                { word: "une poésie", type: "determinant+nom", definition: "Texte en vers à réciter", exemple: "J'apprends une poésie par cœur." },
+                { word: "la garderie", type: "determinant+nom", definition: "Lieu où on garde les enfants", exemple: "Je vais à la garderie après l'école." },
+                { word: "travailler", type: "verbe", definition: "Faire des efforts, étudier", exemple: "Je travaille bien en classe." },
+                { word: "apprendre", type: "verbe", definition: "Acquérir des connaissances", exemple: "J'apprends à lire et à écrire." },
+                { word: "facile", type: "adjectif", definition: "Simple, pas difficile", exemple: "Cet exercice est facile." },
+                { word: "difficile", type: "adjectif", definition: "Pas facile, compliqué", exemple: "Ce problème est difficile." },
+                { word: "scolaire", type: "adjectif", definition: "Qui concerne l'école", exemple: "L'année scolaire commence en septembre." },
+                { word: "aujourd'hui", type: "invariable", definition: "Ce jour, maintenant", exemple: "Aujourd'hui, c'est la rentrée !" },
+                { word: "vraiment", type: "invariable", definition: "Pour de vrai, réellement", exemple: "Je suis vraiment content de te voir." }
+            ]},
+            2: { theme: "La rentrée (suite)", words: [
+                { word: "septembre", type: "nom", definition: "Mois de la rentrée des classes", exemple: "La rentrée est en septembre." },
+                { word: "la rentrée", type: "determinant+nom", definition: "Retour à l'école après les vacances", exemple: "La rentrée des classes est demain." },
+                { word: "la récréation", type: "determinant+nom", definition: "Pause pour jouer à l'école", exemple: "Je joue avec mes amis à la récréation." },
+                { word: "le maître", type: "determinant+nom", definition: "Enseignant homme", exemple: "Le maître corrige nos cahiers." },
+                { word: "la maîtresse", type: "determinant+nom", definition: "Enseignante femme", exemple: "La maîtresse nous lit une histoire." },
+                { word: "un élève", type: "determinant+nom", definition: "Enfant qui va à l'école", exemple: "Je suis un élève de CM1." },
+                { word: "un copain", type: "determinant+nom", definition: "Ami garçon", exemple: "Mon copain s'appelle Lucas." },
+                { word: "une copine", type: "determinant+nom", definition: "Amie fille", exemple: "Ma copine joue avec moi." },
+                { word: "la classe", type: "determinant+nom", definition: "Salle où on apprend / groupe d'élèves", exemple: "Ma classe est au premier étage." },
+                { word: "le préau", type: "determinant+nom", definition: "Espace couvert dans la cour", exemple: "On s'abrite sous le préau quand il pleut." },
+                { word: "le stress", type: "determinant+nom", definition: "Tension, inquiétude", exemple: "J'ai du stress avant les contrôles." },
+                { word: "rentrer", type: "verbe", definition: "Revenir, entrer à nouveau", exemple: "Je rentre à l'école après les vacances." },
+                { word: "ressentir", type: "verbe", definition: "Éprouver une émotion", exemple: "Je ressens de la joie à l'école." },
+                { word: "compter", type: "verbe", definition: "Dire les nombres", exemple: "Je sais compter jusqu'à cent." },
+                { word: "se ranger", type: "verbe", definition: "Se mettre en rang", exemple: "On doit se ranger avant d'entrer en classe." },
+                { word: "nouveau / nouvelle", type: "adjectif", definition: "Qui vient d'arriver, récent", exemple: "Il y a un nouvel élève dans ma classe." },
+                { word: "personne", type: "invariable", definition: "Aucun être humain", exemple: "Il n'y a personne dans la cour." },
+                { word: "hier", type: "invariable", definition: "Le jour avant aujourd'hui", exemple: "Hier, c'était encore les vacances." }
+            ]},
+            3: { theme: "Le travail", words: [
+                { word: "la fatigue", type: "determinant+nom", definition: "État quand on est fatigué", exemple: "Je ressens de la fatigue après l'école." },
+                { word: "un métier", type: "determinant+nom", definition: "Travail qu'on fait pour gagner sa vie", exemple: "Mon père a un métier intéressant." },
+                { word: "une profession", type: "determinant+nom", definition: "Métier, travail", exemple: "Quelle est ta profession préférée ?" },
+                { word: "un boulot", type: "determinant+nom", definition: "Travail (langage familier)", exemple: "Papa part au boulot le matin." },
+                { word: "les vacances", type: "determinant+nom", definition: "Période de repos sans école", exemple: "J'adore les vacances d'été." },
+                { word: "un travail / des travaux", type: "determinant+nom", definition: "Activité, tâche à faire", exemple: "Il y a des travaux dans la rue." },
+                { word: "une tâche", type: "determinant+nom", definition: "Chose à faire", exemple: "Ma tâche est de ranger ma chambre." },
+                { word: "un effort", type: "determinant+nom", definition: "Action difficile qu'on fait", exemple: "Fais un effort pour bien écrire." },
+                { word: "le télétravail", type: "determinant+nom", definition: "Travail fait à la maison", exemple: "Maman fait du télétravail aujourd'hui." },
+                { word: "se fatiguer", type: "verbe", definition: "Devenir fatigué", exemple: "Je me fatigue vite en courant." },
+                { word: "travailleur / travailleuse", type: "adjectif", definition: "Qui aime travailler", exemple: "Cet élève est très travailleur." },
+                { word: "sérieux / sérieuse", type: "adjectif", definition: "Qui travaille bien, appliqué", exemple: "Elle est sérieuse en classe." },
+                { word: "nombreux / nombreuse", type: "adjectif", definition: "En grande quantité", exemple: "Les élèves sont nombreux dans la classe." },
+                { word: "bâclé", type: "adjectif", definition: "Fait trop vite, mal fait", exemple: "Ce travail est bâclé, recommence !" },
+                { word: "forcé", type: "adjectif", definition: "Obligé, pas volontaire", exemple: "Je suis forcé de faire mes devoirs." },
+                { word: "dès", type: "invariable", definition: "À partir de", exemple: "Je travaille dès le matin." }
+            ]},
+            4: { theme: "Le travail scolaire", words: [
+                { word: "le labeur", type: "determinant+nom", definition: "Travail long et difficile", exemple: "Le labeur des paysans est dur." },
+                { word: "la pause", type: "determinant+nom", definition: "Moment de repos", exemple: "On fait une pause à 10 heures." },
+                { word: "la paresse", type: "determinant+nom", definition: "Fait de ne pas vouloir travailler", exemple: "La paresse empêche de réussir." },
+                { word: "rayer", type: "verbe", definition: "Faire un trait pour barrer", exemple: "Je dois rayer le mot faux." },
+                { word: "écrire", type: "verbe", definition: "Tracer des lettres, des mots", exemple: "J'apprends à écrire en cursive." },
+                { word: "souligner", type: "verbe", definition: "Tracer un trait sous un mot", exemple: "Je souligne le titre en rouge." },
+                { word: "surligner", type: "verbe", definition: "Mettre en couleur avec un surligneur", exemple: "Je surligne les mots importants." },
+                { word: "entourer", type: "verbe", definition: "Faire un cercle autour", exemple: "Entoure la bonne réponse." },
+                { word: "recopier", type: "verbe", definition: "Copier à nouveau", exemple: "Je dois recopier ma leçon." },
+                { word: "tracer", type: "verbe", definition: "Dessiner une ligne", exemple: "Je trace un trait à la règle." },
+                { word: "coller", type: "verbe", definition: "Fixer avec de la colle", exemple: "Je colle la feuille dans mon cahier." },
+                { word: "propre", type: "adjectif", definition: "Bien fait, sans tache", exemple: "Ton cahier doit être propre." },
+                { word: "soigné", type: "adjectif", definition: "Fait avec soin, appliqué", exemple: "Ton travail est très soigné." },
+                { word: "véritable", type: "adjectif", definition: "Vrai, réel", exemple: "C'est un véritable travail d'artiste !" },
+                { word: "beaucoup", type: "invariable", definition: "En grande quantité", exemple: "J'ai beaucoup de devoirs." },
+                { word: "toujours", type: "invariable", definition: "À chaque fois, tout le temps", exemple: "Je fais toujours mes devoirs." },
+                { word: "peu", type: "invariable", definition: "Pas beaucoup", exemple: "J'ai peu de temps pour jouer." },
+                { word: "souvent", type: "invariable", definition: "Fréquemment", exemple: "Je lis souvent des livres." }
+            ]},
+            5: { theme: "Habiter", words: [
+                { word: "un immeuble", type: "determinant+nom", definition: "Grand bâtiment avec plusieurs logements", exemple: "J'habite dans un immeuble de 5 étages." },
+                { word: "un lotissement", type: "determinant+nom", definition: "Groupe de maisons dans un quartier", exemple: "Ma maison est dans un lotissement." },
+                { word: "un appartement", type: "determinant+nom", definition: "Logement dans un immeuble", exemple: "Mon appartement a trois chambres." },
+                { word: "un château", type: "determinant+nom", definition: "Grande maison ancienne de roi ou prince", exemple: "Le roi habite dans un château." },
+                { word: "un habitant", type: "determinant+nom", definition: "Personne qui habite quelque part", exemple: "Les habitants de ma ville sont gentils." },
+                { word: "une habitante", type: "determinant+nom", definition: "Femme qui habite quelque part", exemple: "Cette habitante vit ici depuis 10 ans." },
+                { word: "habiter", type: "verbe", definition: "Vivre dans un endroit", exemple: "J'habite une maison avec un jardin." },
+                { word: "loger", type: "verbe", definition: "Avoir un logement, habiter", exemple: "Nous logeons près de l'école." },
+                { word: "louer", type: "verbe", definition: "Payer pour utiliser un logement", exemple: "Mes parents louent un appartement." },
+                { word: "déménager", type: "verbe", definition: "Changer de maison", exemple: "Nous allons déménager en juillet." },
+                { word: "somptueux / somptueuse", type: "adjectif", definition: "Très beau, luxueux", exemple: "Ce château est somptueux." },
+                { word: "nomade", type: "adjectif", definition: "Qui se déplace, sans maison fixe", exemple: "Les nomades voyagent beaucoup." },
+                { word: "sédentaire", type: "adjectif", definition: "Qui reste au même endroit", exemple: "Je suis sédentaire, j'aime ma maison." },
+                { word: "près de", type: "invariable", definition: "À côté de, proche", exemple: "J'habite près de l'école." },
+                { word: "assez", type: "invariable", definition: "Suffisamment", exemple: "Ma chambre est assez grande." },
+                { word: "tellement", type: "invariable", definition: "À ce point, si", exemple: "J'aime tellement ma maison !" },
+                { word: "trop", type: "invariable", definition: "Plus qu'il ne faut", exemple: "Cet appartement est trop petit." }
+            ]},
+            6: { theme: "Habiter (suite)", words: [
+                { word: "un habitant", type: "determinant+nom", definition: "Personne qui habite quelque part", exemple: "Il y a beaucoup d'habitants dans cette ville." },
+                { word: "un immeuble", type: "determinant+nom", definition: "Grand bâtiment avec plusieurs logements", exemple: "Cet immeuble est très vieux." },
+                { word: "un musée", type: "determinant+nom", definition: "Lieu où on expose des œuvres d'art", exemple: "Le château est devenu un musée." },
+                { word: "un château / des châteaux", type: "determinant+nom", definition: "Grande maison ancienne", exemple: "Il y a des châteaux magnifiques en France." },
+                { word: "une pièce", type: "determinant+nom", definition: "Partie d'une maison (chambre, salon...)", exemple: "Ma maison a six pièces." },
+                { word: "un endroit", type: "determinant+nom", definition: "Lieu, place", exemple: "C'est un bel endroit pour habiter." },
+                { word: "se fixer", type: "verbe", definition: "S'installer quelque part", exemple: "Ils se sont fixés dans ce village." },
+                { word: "s'installer", type: "verbe", definition: "Se mettre à vivre quelque part", exemple: "Nous nous installons dans notre nouvelle maison." },
+                { word: "résider", type: "verbe", definition: "Habiter, vivre quelque part", exemple: "Je réside en France." },
+                { word: "inhabité", type: "adjectif", definition: "Où personne n'habite", exemple: "Cette maison est inhabitée depuis longtemps." },
+                { word: "vieil", type: "adjectif", definition: "Ancien, vieux (devant un nom masculin)", exemple: "C'est un vieil immeuble." },
+                { word: "lorsque", type: "invariable", definition: "Quand, au moment où", exemple: "Lorsque je rentre, je fais mes devoirs." },
+                { word: "assez", type: "invariable", definition: "Suffisamment", exemple: "Cette maison est assez grande pour nous." }
+            ]}
+        }
+    },
+    2: { 
+        name: "Période 2", icon: "❄️", available: true,
+        weeks: {
+            1: { theme: "La commémoration du 11 novembre", words: [
+                { word: "la commémoration", type: "determinant+nom", definition: "Cérémonie pour se souvenir", exemple: "La commémoration a lieu le 11 novembre." },
+                { word: "la mémoire", type: "determinant+nom", definition: "Capacité de se souvenir", exemple: "On garde la mémoire des soldats." },
+                { word: "la guerre", type: "determinant+nom", definition: "Conflit armé entre pays", exemple: "La guerre a fait beaucoup de victimes." },
+                { word: "la Marseillaise", type: "determinant+nom", definition: "Hymne national français", exemple: "On chante la Marseillaise lors des cérémonies." },
+                { word: "novembre", type: "nom", definition: "Onzième mois de l'année", exemple: "Le 11 novembre est un jour important." },
+                { word: "un monument aux morts", type: "determinant+nom", definition: "Statue en hommage aux soldats morts", exemple: "On dépose des fleurs au monument aux morts." },
+                { word: "un hymne", type: "determinant+nom", definition: "Chant officiel d'un pays", exemple: "L'hymne national est chanté debout." },
+                { word: "un combattant", type: "determinant+nom", definition: "Personne qui fait la guerre", exemple: "Les combattants ont été très courageux." },
+                { word: "se souvenir", type: "verbe", definition: "Garder en mémoire", exemple: "On doit se souvenir des soldats." },
+                { word: "férié", type: "adjectif", definition: "Jour où on ne travaille pas", exemple: "Le 11 novembre est un jour férié." },
+                { word: "ancien", type: "adjectif", definition: "Qui date d'avant, vieux", exemple: "Les anciens combattants sont honorés." },
+                { word: "mondial / mondiale", type: "adjectif", definition: "Du monde entier", exemple: "La Première Guerre mondiale a duré 4 ans." },
+                { word: "national", type: "adjectif", definition: "Qui concerne tout le pays", exemple: "C'est une fête nationale." },
+                { word: "beaucoup", type: "invariable", definition: "En grande quantité", exemple: "Beaucoup de personnes assistent à la cérémonie." },
+                { word: "pendant", type: "invariable", definition: "Durant, au cours de", exemple: "Pendant la guerre, les soldats se battaient." },
+                { word: "tellement", type: "invariable", definition: "À ce point, si", exemple: "Ils étaient tellement courageux." },
+                { word: "tout le monde", type: "invariable", definition: "Toutes les personnes", exemple: "Tout le monde se lève pour l'hymne." }
+            ]},
+            2: { theme: "L'imaginaire", words: [
+                { word: "l'imagination", type: "determinant+nom", definition: "Capacité d'inventer des choses", exemple: "J'utilise mon imagination pour créer des histoires." },
+                { word: "un rêve", type: "determinant+nom", definition: "Images qu'on voit en dormant", exemple: "J'ai fait un rêve fantastique cette nuit." },
+                { word: "un ogre", type: "determinant+nom", definition: "Géant qui mange les enfants dans les contes", exemple: "L'ogre vit dans une forêt sombre." },
+                { word: "un chevalier", type: "determinant+nom", definition: "Guerrier à cheval au Moyen Âge", exemple: "Le chevalier combat le dragon." },
+                { word: "une grotte", type: "determinant+nom", definition: "Cavité dans la roche", exemple: "Le dragon se cache dans une grotte." },
+                { word: "un dragon", type: "determinant+nom", definition: "Créature qui crache du feu", exemple: "Le dragon garde le trésor." },
+                { word: "un héros", type: "determinant+nom", definition: "Personnage courageux", exemple: "Le héros sauve la princesse." },
+                { word: "défendre", type: "verbe", definition: "Protéger contre une attaque", exemple: "Le chevalier défend le château." },
+                { word: "attaquer", type: "verbe", definition: "Se jeter sur l'ennemi", exemple: "Le dragon attaque le village." },
+                { word: "chevaucher", type: "verbe", definition: "Monter à cheval", exemple: "Le chevalier chevauche son destrier." },
+                { word: "réel", type: "adjectif", definition: "Qui existe vraiment", exemple: "Cette histoire n'est pas réelle." },
+                { word: "irréel", type: "adjectif", definition: "Qui n'existe pas vraiment", exemple: "Les dragons sont des créatures irréelles." },
+                { word: "fictif / fictive", type: "adjectif", definition: "Inventé, imaginé", exemple: "Ce personnage est fictif." },
+                { word: "impossible", type: "adjectif", definition: "Qui ne peut pas se faire", exemple: "Voler comme un dragon est impossible." },
+                { word: "fabuleux / fabuleuse", type: "adjectif", definition: "Extraordinaire, merveilleux", exemple: "C'est une histoire fabuleuse !" },
+                { word: "fantastique", type: "adjectif", definition: "Magique, extraordinaire", exemple: "Ce conte est fantastique." },
+                { word: "vaillant", type: "adjectif", definition: "Courageux, brave", exemple: "Le vaillant chevalier n'a peur de rien." },
+                { word: "toujours", type: "invariable", definition: "À chaque fois, sans fin", exemple: "Le héros gagne toujours à la fin." },
+                { word: "ainsi", type: "invariable", definition: "De cette façon", exemple: "Ainsi se termine l'histoire." },
+                { word: "lors de", type: "invariable", definition: "Au moment de", exemple: "Lors de son aventure, il rencontra un dragon." }
+            ]},
+            3: { theme: "Les contes", words: [
+                { word: "un ogre / une ogresse", type: "determinant+nom", definition: "Géant méchant des contes", exemple: "L'ogresse prépare une soupe." },
+                { word: "un prince / une princesse", type: "determinant+nom", definition: "Enfant du roi et de la reine", exemple: "La princesse vit dans un château." },
+                { word: "un roi / une reine", type: "determinant+nom", definition: "Celui/celle qui dirige un royaume", exemple: "Le roi et la reine organisent un bal." },
+                { word: "un chevalier", type: "determinant+nom", definition: "Guerrier courageux", exemple: "Le chevalier part à l'aventure." },
+                { word: "une recette", type: "determinant+nom", definition: "Instructions pour cuisiner", exemple: "L'ogresse a une recette secrète." },
+                { word: "sauver", type: "verbe", definition: "Aider quelqu'un en danger", exemple: "Le prince va sauver la princesse." },
+                { word: "valeureux / valeureuse", type: "adjectif", definition: "Très courageux", exemple: "Le valeureux chevalier combat le dragon." },
+                { word: "courageux / courageuse", type: "adjectif", definition: "Qui a du courage, brave", exemple: "La princesse est courageuse." },
+                { word: "téméraire", type: "adjectif", definition: "Qui prend des risques", exemple: "Le héros téméraire entre dans la grotte." },
+                { word: "mystérieux / mystérieuse", type: "adjectif", definition: "Plein de mystère", exemple: "La forêt est mystérieuse." },
+                { word: "affreux / affreuse", type: "adjectif", definition: "Très laid, horrible", exemple: "L'ogre a un visage affreux." },
+                { word: "gigantesque", type: "adjectif", definition: "Très très grand", exemple: "Le château est gigantesque." },
+                { word: "impitoyable", type: "adjectif", definition: "Sans pitié, cruel", exemple: "Le dragon est impitoyable." },
+                { word: "beaucoup", type: "invariable", definition: "En grande quantité", exemple: "Il y a beaucoup de contes à lire." }
+            ]},
+            4: { theme: "Émerveiller", words: [
+                { word: "les décorations de Noël", type: "determinant+nom", definition: "Objets pour décorer à Noël", exemple: "Les décorations de Noël brillent dans le sapin." },
+                { word: "les paillettes", type: "determinant+nom", definition: "Petits morceaux brillants", exemple: "Les paillettes scintillent sur la carte." },
+                { word: "l'émerveillement", type: "determinant+nom", definition: "Sentiment d'admiration", exemple: "Les enfants regardent avec émerveillement." },
+                { word: "émerveiller", type: "verbe", definition: "Remplir d'admiration", exemple: "Les lumières émerveillent les enfants." },
+                { word: "éblouir", type: "verbe", definition: "Impressionner par la beauté", exemple: "Le spectacle nous éblouit." },
+                { word: "étonner", type: "verbe", definition: "Surprendre, impressionner", exemple: "Ce cadeau va l'étonner !" },
+                { word: "surprendre", type: "verbe", definition: "Causer de l'étonnement", exemple: "Je veux te surprendre avec ce cadeau." },
+                { word: "merveilleux / merveilleuse", type: "adjectif", definition: "Extraordinaire, magnifique", exemple: "C'est une soirée merveilleuse." },
+                { word: "émerveillé / émerveillée", type: "adjectif", definition: "Plein d'admiration", exemple: "Les enfants sont émerveillés par le sapin." },
+                { word: "pailleté / pailletée", type: "adjectif", definition: "Couvert de paillettes", exemple: "La robe pailletée brille." },
+                { word: "scintillant", type: "adjectif", definition: "Qui brille par éclats", exemple: "Les guirlandes sont scintillantes." },
+                { word: "brillant", type: "adjectif", definition: "Qui brille, lumineux", exemple: "L'étoile brillante est au sommet du sapin." },
+                { word: "jusqu'à", type: "invariable", definition: "Limite dans l'espace ou le temps", exemple: "On fête jusqu'à minuit." },
+                { word: "toujours", type: "invariable", definition: "À chaque fois", exemple: "Noël est toujours magique." },
+                { word: "ensuite", type: "invariable", definition: "Après, puis", exemple: "On ouvre les cadeaux, ensuite on mange." }
+            ]},
+            5: { theme: "Fête de fin d'année", words: [
+                { word: "le houx", type: "determinant+nom", definition: "Plante verte avec des boules rouges", exemple: "Le houx décore la table de Noël." },
+                { word: "le réveillon", type: "determinant+nom", definition: "Repas de fête le soir de Noël", exemple: "Le réveillon dure jusqu'à minuit." },
+                { word: "les invités", type: "determinant+nom", definition: "Personnes qu'on invite", exemple: "Les invités arrivent pour le réveillon." },
+                { word: "une merveille", type: "determinant+nom", definition: "Chose extraordinaire", exemple: "Ce gâteau est une merveille !" },
+                { word: "la tradition", type: "determinant+nom", definition: "Habitude transmise de génération en génération", exemple: "Décorer le sapin est une tradition." },
+                { word: "briller", type: "verbe", definition: "Émettre de la lumière", exemple: "Les guirlandes brillent dans la nuit." },
+                { word: "scintiller", type: "verbe", definition: "Briller par petits éclats", exemple: "Les étoiles scintillent dans le ciel." },
+                { word: "étinceler", type: "verbe", definition: "Briller très fort", exemple: "Le sapin étincelle de mille feux." },
+                { word: "embellir", type: "verbe", definition: "Rendre plus beau", exemple: "Les décorations embellissent la maison." },
+                { word: "cueillir", type: "verbe", definition: "Ramasser des fleurs ou fruits", exemple: "On cueille du houx pour décorer." },
+                { word: "brillant", type: "adjectif", definition: "Qui brille", exemple: "Les boules brillantes décorent le sapin." },
+                { word: "scintillant", type: "adjectif", definition: "Qui scintille", exemple: "La neige est scintillante au soleil." },
+                { word: "étincelant", type: "adjectif", definition: "Qui étincelle, très brillant", exemple: "Le sapin étincelant illumine le salon." },
+                { word: "magnifique", type: "adjectif", definition: "Très beau", exemple: "Le repas de Noël est magnifique." },
+                { word: "envoûtant", type: "adjectif", definition: "Qui charme, captive", exemple: "L'ambiance de Noël est envoûtante." },
+                { word: "charmant", type: "adjectif", definition: "Agréable, joli", exemple: "C'est un charmant village de Noël." },
+                { word: "tout le monde", type: "invariable", definition: "Toutes les personnes", exemple: "Tout le monde ouvre ses cadeaux." },
+                { word: "pourtant", type: "invariable", definition: "Cependant, malgré tout", exemple: "Il est tard, pourtant je ne suis pas fatigué." }
+            ]}
+        }
+    },
+    3: { 
+        name: "Période 3", icon: "🌸", available: true,
+        weeks: {
+            1: { theme: "Bonne année !", words: [
+                { word: "un vœu", type: "determinant+nom", definition: "Souhait qu'on fait pour l'avenir", exemple: "Je fais un vœu pour la nouvelle année." },
+                { word: "un souhait", type: "determinant+nom", definition: "Ce qu'on espère, ce qu'on désire", exemple: "Mon souhait est d'avoir un chien." },
+                { word: "une résolution", type: "determinant+nom", definition: "Décision qu'on prend pour changer", exemple: "Ma résolution est de mieux travailler." },
+                { word: "les parents", type: "determinant+nom", definition: "Le papa et la maman", exemple: "Mes parents me souhaitent bonne année." },
+                { word: "obéir", type: "verbe", definition: "Faire ce qu'on nous demande", exemple: "Je vais obéir à mes parents cette année." },
+                { word: "réussir", type: "verbe", definition: "Arriver à faire quelque chose", exemple: "Je veux réussir mes contrôles." },
+                { word: "travailler", type: "verbe", definition: "Faire des efforts, étudier", exemple: "Je dois travailler pour progresser." },
+                { word: "souhaiter", type: "verbe", definition: "Exprimer un vœu", exemple: "Je te souhaite une bonne année !" },
+                { word: "bonne", type: "adjectif", definition: "Qui est bien, agréable", exemple: "Bonne année et bonne santé !" },
+                { word: "courageux", type: "adjectif", definition: "Qui a du courage, brave", exemple: "Je serai courageux pour mes examens." },
+                { word: "joli / jolie", type: "adjectif", definition: "Beau, agréable à voir", exemple: "J'ai reçu une jolie carte de vœux." },
+                { word: "compliqué", type: "adjectif", definition: "Difficile à faire ou comprendre", exemple: "Cette résolution est compliquée à tenir." },
+                { word: "trop", type: "invariable", definition: "Plus qu'il ne faut", exemple: "J'ai mangé trop de chocolat à Noël." },
+                { word: "mieux", type: "invariable", definition: "De façon plus bonne", exemple: "Cette année, je veux faire mieux." },
+                { word: "cette", type: "invariable", definition: "Déterminant démonstratif féminin", exemple: "Cette année sera formidable !" }
+            ]},
+            2: { theme: "Le gel", words: [
+                { word: "le gel", type: "determinant+nom", definition: "Froid qui transforme l'eau en glace", exemple: "Le gel a gelé les flaques d'eau." },
+                { word: "le givre", type: "determinant+nom", definition: "Fine couche de glace sur les objets", exemple: "Le givre recouvre les vitres ce matin." },
+                { word: "le dégel", type: "determinant+nom", definition: "Quand la glace fond", exemple: "Le dégel arrive avec le printemps." },
+                { word: "le verglas", type: "determinant+nom", definition: "Glace fine et glissante sur le sol", exemple: "Attention au verglas sur la route !" },
+                { word: "la glace", type: "determinant+nom", definition: "Eau devenue solide par le froid", exemple: "La glace recouvre le lac en hiver." },
+                { word: "la fonte", type: "determinant+nom", definition: "Quand quelque chose fond", exemple: "La fonte des neiges arrive au printemps." },
+                { word: "l'hiver", type: "determinant+nom", definition: "Saison la plus froide", exemple: "L'hiver, il fait très froid dehors." },
+                { word: "geler", type: "verbe", definition: "Se transformer en glace", exemple: "L'eau va geler cette nuit." },
+                { word: "congeler", type: "verbe", definition: "Mettre au froid pour conserver", exemple: "On peut congeler les légumes." },
+                { word: "congelé", type: "adjectif", definition: "Transformé en glace", exemple: "Le lac est complètement congelé." },
+                { word: "gelé", type: "adjectif", definition: "Très froid, glacé", exemple: "J'ai les mains gelées !" },
+                { word: "givré", type: "adjectif", definition: "Couvert de givre", exemple: "Les arbres sont givrés ce matin." },
+                { word: "glacé", type: "adjectif", definition: "Très très froid", exemple: "Le vent glacé me fait frissonner." },
+                { word: "blanc", type: "adjectif", definition: "De la couleur de la neige", exemple: "Tout est blanc avec le givre." },
+                { word: "glacial", type: "adjectif", definition: "Extrêmement froid", exemple: "Il fait un froid glacial dehors." },
+                { word: "hier", type: "invariable", definition: "Le jour avant aujourd'hui", exemple: "Hier, il a gelé toute la nuit." }
+            ]},
+            3: { theme: "Le gel (suite)", words: [
+                { word: "la glace", type: "determinant+nom", definition: "Eau devenue solide par le froid", exemple: "Je glisse sur la glace." },
+                { word: "la congélation", type: "determinant+nom", definition: "Action de congeler", exemple: "La congélation conserve les aliments." },
+                { word: "la décongélation", type: "determinant+nom", definition: "Action de décongeler", exemple: "La décongélation prend du temps." },
+                { word: "le congélateur", type: "determinant+nom", definition: "Appareil pour congeler", exemple: "Je mets la viande au congélateur." },
+                { word: "une engelure", type: "determinant+nom", definition: "Blessure causée par le froid", exemple: "J'ai une engelure au doigt." },
+                { word: "de l'antigel", type: "determinant+nom", definition: "Produit qui empêche de geler", exemple: "Papa met de l'antigel dans la voiture." },
+                { word: "congeler", type: "verbe", definition: "Mettre au froid pour conserver", exemple: "Il faut congeler ce poisson." },
+                { word: "décongeler", type: "verbe", definition: "Faire fondre ce qui est gelé", exemple: "Je dois décongeler le pain." },
+                { word: "froid", type: "adjectif", definition: "Qui n'est pas chaud", exemple: "L'eau du lac est très froide." },
+                { word: "congelable", type: "adjectif", definition: "Qui peut être congelé", exemple: "Ce plat est congelable." },
+                { word: "heureusement", type: "invariable", definition: "Par chance, c'est bien que", exemple: "Heureusement, je portais des gants." }
+            ]},
+            4: { theme: "Le climat", words: [
+                { word: "le climat", type: "determinant+nom", definition: "Temps qu'il fait dans une région", exemple: "Le climat de la France est tempéré." },
+                { word: "les conditions", type: "determinant+nom", definition: "État, situation", exemple: "Les conditions météorologiques sont mauvaises." },
+                { word: "un climatologue", type: "determinant+nom", definition: "Scientifique qui étudie le climat", exemple: "Le climatologue annonce un réchauffement." },
+                { word: "le temps", type: "determinant+nom", definition: "État de l'atmosphère (pluie, soleil...)", exemple: "Le temps est nuageux aujourd'hui." },
+                { word: "la chaleur", type: "determinant+nom", definition: "Température élevée", exemple: "La chaleur de l'été est agréable." },
+                { word: "climatiser", type: "verbe", definition: "Rafraîchir avec la climatisation", exemple: "Il faut climatiser la maison en été." },
+                { word: "s'acclimater", type: "verbe", definition: "S'habituer à un nouveau climat", exemple: "Il faut du temps pour s'acclimater." },
+                { word: "s'hydrater", type: "verbe", definition: "Boire de l'eau", exemple: "Il faut s'hydrater quand il fait chaud." },
+                { word: "météorologique", type: "adjectif", definition: "Qui concerne la météo", exemple: "Le bulletin météorologique annonce du soleil." },
+                { word: "humide", type: "adjectif", definition: "Qui contient de l'eau, mouillé", exemple: "L'air est très humide près de la mer." },
+                { word: "tropical / tropicale", type: "adjectif", definition: "Des régions chaudes près de l'équateur", exemple: "La forêt tropicale est pleine d'animaux." },
+                { word: "chaud", type: "adjectif", definition: "Qui a une température élevée", exemple: "Il fait très chaud en été." },
+                { word: "d'aujourd'hui", type: "invariable", definition: "De ce jour, actuel", exemple: "Le climat d'aujourd'hui change vite." }
+            ]},
+            5: { theme: "Le climat (suite)", words: [
+                { word: "la climatisation", type: "determinant+nom", definition: "Appareil qui rafraîchit l'air", exemple: "La climatisation rafraîchit la maison." },
+                { word: "la canicule", type: "determinant+nom", definition: "Période de très forte chaleur", exemple: "La canicule dure depuis une semaine." },
+                { word: "l'atmosphère", type: "determinant+nom", definition: "Couche d'air autour de la Terre", exemple: "L'atmosphère se réchauffe." },
+                { word: "le réchauffement", type: "determinant+nom", definition: "Augmentation de la température", exemple: "Le réchauffement climatique est un problème." },
+                { word: "l'air", type: "determinant+nom", definition: "Ce qu'on respire", exemple: "L'air est pollué dans les villes." },
+                { word: "rafraîchir", type: "verbe", definition: "Rendre plus frais", exemple: "La pluie va rafraîchir l'air." },
+                { word: "acclimater", type: "verbe", definition: "Habituer à un nouveau climat", exemple: "Il faut acclimater les plantes." },
+                { word: "dangereux", type: "adjectif", definition: "Qui peut faire du mal", exemple: "La canicule est dangereuse pour les personnes âgées." },
+                { word: "climatique", type: "adjectif", definition: "Qui concerne le climat", exemple: "Le changement climatique nous inquiète." },
+                { word: "favorable", type: "adjectif", definition: "Qui convient bien", exemple: "Le climat est favorable aux cultures." },
+                { word: "pluvieux", type: "adjectif", definition: "Avec beaucoup de pluie", exemple: "L'automne est souvent pluvieux." },
+                { word: "montagnard", type: "adjectif", definition: "De la montagne", exemple: "Le climat montagnard est rude." },
+                { word: "rigoureux / rigoureuse", type: "adjectif", definition: "Très dur, sévère (pour le froid)", exemple: "L'hiver est rigoureux cette année." },
+                { word: "souvent", type: "invariable", definition: "Fréquemment, beaucoup de fois", exemple: "Il pleut souvent en automne." }
+            ]}
+        }
+    },
+    4: { 
+        name: "Période 4", icon: "☀️", available: true,
+        weeks: {
+            1: { theme: "La Saint Patrick, en Irlande", words: [
+                { word: "l'Irlande", type: "determinant+nom", definition: "Pays d'Europe, une île verte", exemple: "L'Irlande est un pays où il pleut souvent." },
+                { word: "un arc-en-ciel", type: "determinant+nom", definition: "Bande de couleurs dans le ciel après la pluie", exemple: "Regarde le bel arc-en-ciel après l'orage !" },
+                { word: "un farfadet", type: "determinant+nom", definition: "Petit lutin des légendes irlandaises", exemple: "Le farfadet garde son trésor au pied de l'arc-en-ciel." },
+                { word: "un chaudron", type: "determinant+nom", definition: "Grand récipient pour cuisiner", exemple: "Le farfadet cache son or dans un chaudron." },
+                { word: "un trèfle", type: "determinant+nom", definition: "Petite plante à trois ou quatre feuilles", exemple: "Un trèfle à quatre feuilles porte bonheur." },
+                { word: "un festival / des festivals", type: "determinant+nom", definition: "Grande fête avec spectacles", exemple: "Il y a des festivals de musique en Irlande." },
+                { word: "un irlandais", type: "determinant+nom", definition: "Personne qui vient d'Irlande", exemple: "Cet irlandais joue de la harpe." },
+                { word: "un chapeau / des chapeaux", type: "determinant+nom", definition: "Vêtement qu'on met sur la tête", exemple: "Le farfadet porte un chapeau vert." },
+                { word: "un symbole", type: "determinant+nom", definition: "Image qui représente quelque chose", exemple: "Le trèfle est un symbole de l'Irlande." },
+                { word: "fêter", type: "verbe", definition: "Célébrer un événement joyeux", exemple: "On va fêter la Saint Patrick le 17 mars." },
+                { word: "posséder", type: "verbe", definition: "Avoir quelque chose à soi", exemple: "Le farfadet possède un trésor en or." },
+                { word: "rempli", type: "adjectif", definition: "Qui est plein", exemple: "Le chaudron est rempli de pièces d'or." },
+                { word: "chrétien / chrétienne", type: "adjectif", definition: "Qui suit la religion du Christ", exemple: "Saint Patrick était un saint chrétien." },
+                { word: "tout le monde", type: "invariable", definition: "Toutes les personnes", exemple: "Tout le monde s'habille en vert pour la fête." }
+            ]},
+            2: { theme: "L'espace", words: [
+                { word: "une étoile", type: "determinant+nom", definition: "Point lumineux dans le ciel la nuit", exemple: "Je compte les étoiles dans le ciel." },
+                { word: "une planète", type: "determinant+nom", definition: "Gros astre qui tourne autour du Soleil", exemple: "La Terre est une planète du système solaire." },
+                { word: "une comète", type: "determinant+nom", definition: "Astre avec une longue queue lumineuse", exemple: "La comète traverse le ciel avec sa queue brillante." },
+                { word: "un astre", type: "determinant+nom", definition: "Corps céleste (étoile, planète...)", exemple: "Le Soleil est un astre très chaud." },
+                { word: "la distance", type: "determinant+nom", definition: "Espace entre deux points", exemple: "La distance entre la Terre et la Lune est grande." },
+                { word: "l'atmosphère", type: "determinant+nom", definition: "Couche d'air autour de la Terre", exemple: "L'atmosphère nous protège des rayons du Soleil." },
+                { word: "l'astronomie", type: "determinant+nom", definition: "Science qui étudie les étoiles", exemple: "J'adore l'astronomie et regarder les étoiles." },
+                { word: "envoyer", type: "verbe", definition: "Faire partir vers un endroit", exemple: "On va envoyer une fusée dans l'espace." },
+                { word: "voyager", type: "verbe", definition: "Se déplacer loin", exemple: "Les astronautes voyagent jusqu'à la Lune." },
+                { word: "explorer", type: "verbe", definition: "Découvrir un endroit inconnu", exemple: "Les robots explorent la planète Mars." },
+                { word: "espacé", type: "adjectif", definition: "Avec de l'espace entre", exemple: "Les planètes sont très espacées les unes des autres." },
+                { word: "infini", type: "adjectif", definition: "Sans fin, sans limite", exemple: "L'univers semble infini." },
+                { word: "éloigné", type: "adjectif", definition: "Qui est loin", exemple: "Cette étoile est très éloignée de la Terre." },
+                { word: "collé", type: "adjectif", definition: "Très proche, attaché", exemple: "La Lune n'est pas collée à la Terre." },
+                { word: "beaucoup", type: "invariable", definition: "En grande quantité", exemple: "Il y a beaucoup d'étoiles dans le ciel." },
+                { word: "parfois", type: "invariable", definition: "De temps en temps", exemple: "Parfois, on peut voir des étoiles filantes." }
+            ]},
+            3: { theme: "L'espace (suite)", words: [
+                { word: "un espacement", type: "determinant+nom", definition: "Distance entre deux choses", exemple: "L'espacement entre les planètes est immense." },
+                { word: "un spationaute", type: "determinant+nom", definition: "Personne qui voyage dans l'espace", exemple: "Thomas Pesquet est un spationaute français." },
+                { word: "un engin", type: "determinant+nom", definition: "Machine, appareil", exemple: "La fusée est un engin très puissant." },
+                { word: "un satellite", type: "determinant+nom", definition: "Objet qui tourne autour d'une planète", exemple: "La Lune est le satellite naturel de la Terre." },
+                { word: "une station", type: "determinant+nom", definition: "Base où vivent les astronautes", exemple: "La station spatiale tourne autour de la Terre." },
+                { word: "une expérience", type: "determinant+nom", definition: "Test scientifique", exemple: "Les astronautes font des expériences dans l'espace." },
+                { word: "un vaisseau", type: "determinant+nom", definition: "Véhicule spatial", exemple: "Le vaisseau décolle vers la Lune." },
+                { word: "une combinaison", type: "determinant+nom", definition: "Vêtement spécial des astronautes", exemple: "La combinaison protège l'astronaute dans l'espace." },
+                { word: "l'éloignement", type: "determinant+nom", definition: "Fait d'être loin", exemple: "L'éloignement des étoiles les rend petites." },
+                { word: "s'éloigner", type: "verbe", definition: "Aller plus loin", exemple: "La fusée s'éloigne de la Terre." },
+                { word: "décoller", type: "verbe", definition: "Quitter le sol", exemple: "La fusée va décoller dans 10 secondes !" },
+                { word: "spatial / spatiaux", type: "adjectif", definition: "Qui concerne l'espace", exemple: "Les voyages spatiaux sont dangereux." },
+                { word: "silencieux / silencieuse", type: "adjectif", definition: "Sans bruit", exemple: "L'espace est complètement silencieux." },
+                { word: "spécial / spéciale", type: "adjectif", definition: "Pas comme les autres", exemple: "Il faut une combinaison spéciale pour sortir." },
+                { word: "souvent", type: "invariable", definition: "Fréquemment, beaucoup de fois", exemple: "Les astronautes s'entraînent souvent." }
+            ]},
+            4: { theme: "Ressentir", words: [
+                { word: "une émotion", type: "determinant+nom", definition: "Ce qu'on ressent (joie, peur...)", exemple: "La joie est une émotion agréable." },
+                { word: "un sentiment", type: "determinant+nom", definition: "Ce qu'on ressent dans son cœur", exemple: "L'amour est un beau sentiment." },
+                { word: "la tristesse", type: "determinant+nom", definition: "Émotion quand on est malheureux", exemple: "Je ressens de la tristesse quand mon ami part." },
+                { word: "le stress", type: "determinant+nom", definition: "Tension, inquiétude", exemple: "J'ai du stress avant les contrôles." },
+                { word: "le bonheur", type: "determinant+nom", definition: "Grande joie, être heureux", exemple: "Les vacances me donnent du bonheur." },
+                { word: "la gaieté", type: "determinant+nom", definition: "Bonne humeur, joie", exemple: "Sa gaieté fait plaisir à voir." },
+                { word: "la fierté", type: "determinant+nom", definition: "Sentiment d'être content de soi", exemple: "Je ressens de la fierté quand je réussis." },
+                { word: "ressentir", type: "verbe", definition: "Éprouver une émotion", exemple: "Je ressens de la joie quand je vois mes amis." },
+                { word: "gérer", type: "verbe", definition: "Contrôler, s'occuper de", exemple: "Il faut apprendre à gérer ses émotions." },
+                { word: "distinguer", type: "verbe", definition: "Reconnaître la différence", exemple: "Je sais distinguer la joie de la tristesse." },
+                { word: "heureux", type: "adjectif", definition: "Content, qui a du bonheur", exemple: "Je suis heureux d'être en vacances." },
+                { word: "malheureux", type: "adjectif", definition: "Triste, pas content", exemple: "Mon chien est malheureux quand je pars." },
+                { word: "tout", type: "invariable", definition: "La totalité", exemple: "J'ai tout un tas d'émotions différentes." },
+                { word: "cependant", type: "invariable", definition: "Mais, pourtant", exemple: "Je suis fatigué, cependant je suis content." }
+            ]},
+            5: { theme: "Ressentir (suite)", words: [
+                { word: "une sensation", type: "determinant+nom", definition: "Ce qu'on ressent dans son corps", exemple: "J'ai une sensation de froid dans le dos." },
+                { word: "une angoisse", type: "determinant+nom", definition: "Grande peur, inquiétude forte", exemple: "L'angoisse me serre le ventre." },
+                { word: "un ressentiment", type: "determinant+nom", definition: "Rancune, colère gardée", exemple: "Il garde du ressentiment après la dispute." },
+                { word: "la peur", type: "determinant+nom", definition: "Émotion face au danger", exemple: "J'ai peur du noir." },
+                { word: "la colère", type: "determinant+nom", definition: "Émotion quand on est fâché", exemple: "La colère me fait crier." },
+                { word: "le danger", type: "determinant+nom", definition: "Ce qui peut faire mal", exemple: "Le feu représente un danger." },
+                { word: "le physique", type: "determinant+nom", definition: "Le corps", exemple: "Le stress peut toucher le physique." },
+                { word: "s'inquiéter", type: "verbe", definition: "Avoir peur pour quelqu'un", exemple: "Maman s'inquiète quand je rentre tard." },
+                { word: "percevoir", type: "verbe", definition: "Sentir, remarquer", exemple: "Je perçois ta tristesse." },
+                { word: "éprouver", type: "verbe", definition: "Ressentir une émotion", exemple: "J'éprouve de la joie en te voyant." },
+                { word: "inquiet / inquiète", type: "adjectif", definition: "Qui a peur, soucieux", exemple: "Je suis inquiet pour mon examen." },
+                { word: "effrayé", type: "adjectif", definition: "Qui a très peur", exemple: "Le chat effrayé s'est enfui." },
+                { word: "malheureusement", type: "invariable", definition: "C'est triste mais...", exemple: "Malheureusement, il pleut aujourd'hui." },
+                { word: "très", type: "invariable", definition: "Beaucoup, intensément", exemple: "Je suis très content de te voir." }
+            ]},
+            6: { theme: "Les mots invariables", words: [
+                { word: "combien", type: "invariable", definition: "Pour demander une quantité", exemple: "Combien de bonbons veux-tu ?" },
+                { word: "parce que", type: "invariable", definition: "Pour donner une raison", exemple: "Je suis content parce que c'est les vacances." },
+                { word: "dessous", type: "invariable", definition: "En bas, sous quelque chose", exemple: "Le chat se cache dessous le lit." },
+                { word: "plusieurs", type: "invariable", definition: "Plus d'un, quelques-uns", exemple: "J'ai plusieurs livres à lire." },
+                { word: "longtemps", type: "invariable", definition: "Pendant beaucoup de temps", exemple: "J'ai attendu longtemps le bus." },
+                { word: "autrefois", type: "invariable", definition: "Dans le passé, avant", exemple: "Autrefois, il n'y avait pas d'ordinateurs." },
+                { word: "cependant", type: "invariable", definition: "Mais, pourtant", exemple: "Il pleut, cependant je sors quand même." },
+                { word: "à travers", type: "invariable", definition: "En passant par", exemple: "Je vois à travers la fenêtre." },
+                { word: "peut-être", type: "invariable", definition: "Possiblement, pas sûr", exemple: "Peut-être qu'il viendra demain." },
+                { word: "aujourd'hui", type: "invariable", definition: "Ce jour, maintenant", exemple: "Aujourd'hui, c'est mon anniversaire !" }
+            ]}
+        }
+    },
+    5: { 
+        name: "Période 5", icon: "🌈", available: true,
+        weeks: {
+            1: { theme: "L'informatique", words: [
+                { word: "un ordinateur", type: "determinant+nom", definition: "Machine qui permet de travailler et communiquer", exemple: "J'utilise l'ordinateur pour faire mes devoirs." },
+                { word: "un écran", type: "determinant+nom", definition: "Partie où on voit les images et le texte", exemple: "L'écran de mon ordinateur est très grand." },
+                { word: "une souris", type: "determinant+nom", definition: "Objet qu'on déplace pour cliquer", exemple: "Je clique avec la souris pour ouvrir un fichier." },
+                { word: "un logiciel", type: "determinant+nom", definition: "Programme de l'ordinateur", exemple: "Ce logiciel permet de dessiner." },
+                { word: "un clavier", type: "determinant+nom", definition: "Partie avec les lettres pour écrire", exemple: "Je tape sur le clavier pour écrire un texte." },
+                { word: "un e-mail", type: "determinant+nom", definition: "Message envoyé par internet", exemple: "J'ai reçu un e-mail de ma grand-mère." },
+                { word: "internet", type: "nom", definition: "Réseau mondial qui connecte les ordinateurs", exemple: "Grâce à internet, je peux chercher des informations." },
+                { word: "communiquer", type: "verbe", definition: "Parler ou écrire à quelqu'un", exemple: "On peut communiquer avec ses amis par message." },
+                { word: "envoyer", type: "verbe", definition: "Faire partir un message", exemple: "Je vais envoyer une photo à mon cousin." },
+                { word: "allumer", type: "verbe", definition: "Mettre en marche", exemple: "Il faut allumer l'ordinateur avant de travailler." },
+                { word: "recevoir", type: "verbe", definition: "Obtenir quelque chose", exemple: "J'aime recevoir des messages de mes amis." },
+                { word: "installer", type: "verbe", definition: "Mettre un programme", exemple: "Papa va installer un nouveau jeu sur l'ordinateur." },
+                { word: "naviguer", type: "verbe", definition: "Se déplacer sur internet", exemple: "Je sais naviguer sur internet pour trouver des informations." },
+                { word: "électronique", type: "adjectif", definition: "Qui fonctionne avec l'électricité", exemple: "Une tablette est un appareil électronique." },
+                { word: "autrement", type: "invariable", definition: "D'une autre manière", exemple: "Si ça ne marche pas, essaie autrement." }
+            ]},
+            2: { theme: "Le cyclisme", words: [
+                { word: "un cycliste", type: "determinant+nom", definition: "Personne qui fait du vélo", exemple: "Le cycliste roule très vite sur la route." },
+                { word: "un vélo", type: "determinant+nom", definition: "Transport à deux roues qu'on pédale", exemple: "Je vais à l'école à vélo." },
+                { word: "un circuit", type: "determinant+nom", definition: "Parcours fermé pour les courses", exemple: "Les coureurs font trois tours du circuit." },
+                { word: "une compétition", type: "determinant+nom", definition: "Épreuve où on essaie de gagner", exemple: "Mon frère participe à une compétition de vélo." },
+                { word: "l'endurance", type: "determinant+nom", definition: "Capacité à faire un effort longtemps", exemple: "Il faut de l'endurance pour faire du vélo longtemps." },
+                { word: "un cross", type: "determinant+nom", definition: "Course dans la nature", exemple: "Le cross passe par la forêt et les champs." },
+                { word: "le cyclotourisme", type: "determinant+nom", definition: "Tourisme à vélo", exemple: "Cet été, on fait du cyclotourisme en famille." },
+                { word: "pédaler", type: "verbe", definition: "Faire tourner les pédales", exemple: "Je dois pédaler fort pour monter la côte." },
+                { word: "apprécier", type: "verbe", definition: "Aimer beaucoup", exemple: "J'apprécie les balades à vélo avec mes amis." },
+                { word: "amateur", type: "adjectif", definition: "Qui fait pour le plaisir", exemple: "Mon père est un cycliste amateur." },
+                { word: "professionnel", type: "adjectif", definition: "Qui fait comme métier", exemple: "Un coureur professionnel s'entraîne tous les jours." },
+                { word: "sportif / sportive", type: "adjectif", definition: "Qui aime le sport", exemple: "Ma sœur est très sportive." },
+                { word: "excellent", type: "adjectif", definition: "Très très bon", exemple: "C'est un excellent vélo de course." },
+                { word: "beaucoup", type: "invariable", definition: "En grande quantité", exemple: "J'aime beaucoup faire du vélo." },
+                { word: "très", type: "invariable", definition: "Pour dire qu'il y en a plus", exemple: "Ce vélo est très rapide." }
+            ]},
+            3: { theme: "Le vélo", words: [
+                { word: "une selle", type: "determinant+nom", definition: "Siège du vélo", exemple: "La selle de mon vélo est confortable." },
+                { word: "un guidon", type: "determinant+nom", definition: "Barre pour diriger le vélo", exemple: "Je tiens bien le guidon pour tourner." },
+                { word: "les freins", type: "determinant+nom", definition: "Pour arrêter le vélo", exemple: "J'appuie sur les freins pour m'arrêter." },
+                { word: "les vitesses", type: "determinant+nom", definition: "Pour pédaler plus ou moins fort", exemple: "Je change les vitesses dans les montées." },
+                { word: "un dérailleur", type: "determinant+nom", definition: "Pièce qui change les vitesses", exemple: "Le dérailleur permet de changer de vitesse." },
+                { word: "les pédales", type: "determinant+nom", definition: "Où on pose les pieds", exemple: "Je pose mes pieds sur les pédales." },
+                { word: "une poignée", type: "determinant+nom", definition: "Partie du guidon qu'on tient", exemple: "Les poignées du guidon sont en caoutchouc." },
+                { word: "les roues", type: "determinant+nom", definition: "Parties rondes qui tournent", exemple: "Les roues de mon vélo sont neuves." },
+                { word: "les rayons", type: "determinant+nom", definition: "Fils dans les roues", exemple: "Les rayons relient le centre à la roue." },
+                { word: "le nettoyage", type: "determinant+nom", definition: "Action de rendre propre", exemple: "Le nettoyage du vélo est important." },
+                { word: "nettoyer", type: "verbe", definition: "Rendre propre", exemple: "Je nettoie mon vélo après la pluie." },
+                { word: "spécial", type: "adjectif", definition: "Pas comme les autres", exemple: "J'ai un casque spécial pour le vélo." },
+                { word: "brillant", type: "adjectif", definition: "Qui brille", exemple: "Mon vélo est tout brillant après le lavage." },
+                { word: "efficace", type: "adjectif", definition: "Qui marche bien", exemple: "Ces freins sont très efficaces." },
+                { word: "bien", type: "invariable", definition: "De bonne manière", exemple: "Je pédale bien pour avancer vite." },
+                { word: "un peu", type: "invariable", definition: "Pas beaucoup", exemple: "La selle est un peu haute pour moi." },
+                { word: "jusqu'au", type: "invariable", definition: "Pour la limite", exemple: "Je roule jusqu'au bout de la rue." }
+            ]},
+            4: { theme: "Gouverner", words: [
+                { word: "un président", type: "determinant+nom", definition: "Chef d'un pays", exemple: "Le président habite au palais de l'Élysée." },
+                { word: "une république", type: "determinant+nom", definition: "Pays où le peuple choisit", exemple: "La France est une république." },
+                { word: "un ministre", type: "determinant+nom", definition: "Aide le président à diriger", exemple: "Le ministre de l'éducation s'occupe des écoles." },
+                { word: "un citoyen", type: "determinant+nom", definition: "Habitant d'un pays avec des droits", exemple: "Chaque citoyen peut voter." },
+                { word: "un gouvernement", type: "determinant+nom", definition: "Groupe qui dirige un pays", exemple: "Le gouvernement prend des décisions importantes." },
+                { word: "un projet", type: "determinant+nom", definition: "Plan de ce qu'on veut faire", exemple: "Le président présente son projet." },
+                { word: "un discours", type: "determinant+nom", definition: "Texte dit devant des gens", exemple: "Le président fait un discours à la télévision." },
+                { word: "un mandat", type: "determinant+nom", definition: "Période de direction", exemple: "Un mandat de président dure cinq ans." },
+                { word: "un candidat", type: "determinant+nom", definition: "Personne qui veut être élue", exemple: "Il y a plusieurs candidats pour l'élection." },
+                { word: "gouverner", type: "verbe", definition: "Diriger un pays", exemple: "Gouverner un pays est une grande responsabilité." },
+                { word: "diriger", type: "verbe", definition: "Être le chef", exemple: "Le président dirige le pays." },
+                { word: "obéir", type: "verbe", definition: "Faire ce qu'on demande", exemple: "Les citoyens doivent obéir aux lois." },
+                { word: "présider", type: "verbe", definition: "Être président", exemple: "Il préside la réunion du gouvernement." },
+                { word: "garantir", type: "verbe", definition: "Promettre", exemple: "L'État doit garantir la sécurité des citoyens." },
+                { word: "réaliser", type: "verbe", definition: "Faire, rendre réel", exemple: "Le président veut réaliser ses promesses." },
+                { word: "ensemble", type: "invariable", definition: "Tous réunis", exemple: "Nous travaillons ensemble pour le pays." }
+            ]},
+            5: { theme: "Gouverner (suite)", words: [
+                { word: "une monarchie", type: "determinant+nom", definition: "Pays dirigé par un roi", exemple: "L'Angleterre est une monarchie." },
+                { word: "un empereur", type: "determinant+nom", definition: "Chef très puissant", exemple: "Napoléon était un empereur célèbre." },
+                { word: "les pouvoirs", type: "determinant+nom", definition: "Capacité de décider", exemple: "Le président a beaucoup de pouvoirs." },
+                { word: "les décisions", type: "determinant+nom", definition: "Choix qu'on fait", exemple: "Les décisions du roi sont importantes." },
+                { word: "un conseiller", type: "determinant+nom", definition: "Donne des conseils", exemple: "Le conseiller aide le roi à gouverner." },
+                { word: "un pays", type: "determinant+nom", definition: "Territoire avec son gouvernement", exemple: "La France est un beau pays." },
+                { word: "nommer", type: "verbe", definition: "Choisir pour un poste", exemple: "Le président va nommer un nouveau ministre." },
+                { word: "décider", type: "verbe", definition: "Faire un choix", exemple: "C'est le roi qui décide des lois." },
+                { word: "imposer", type: "verbe", definition: "Obliger", exemple: "Le roi peut imposer des règles." },
+                { word: "choisir", type: "verbe", definition: "Prendre parmi d'autres", exemple: "Le peuple peut choisir son président." },
+                { word: "premier / première", type: "adjectif", definition: "Qui vient avant tous", exemple: "Le premier ministre aide le président." },
+                { word: "depuis", type: "invariable", definition: "À partir d'un moment", exemple: "Il est président depuis cinq ans." }
+            ]},
+            6: { theme: "Les vacances", words: [
+                { word: "les vacances", type: "determinant+nom", definition: "Période de repos", exemple: "J'adore les vacances d'été." },
+                { word: "le ski nautique", type: "determinant+nom", definition: "Sport sur l'eau avec des skis", exemple: "J'ai essayé le ski nautique à la mer." },
+                { word: "le paddle", type: "determinant+nom", definition: "Planche où on rame debout", exemple: "On fait du paddle sur le lac." },
+                { word: "l'escalade", type: "determinant+nom", definition: "Sport où on grimpe", exemple: "L'escalade est un sport de montagne." },
+                { word: "une randonnée", type: "determinant+nom", definition: "Longue promenade", exemple: "Nous faisons une randonnée en forêt." },
+                { word: "le cyclisme", type: "determinant+nom", definition: "Sport du vélo", exemple: "Le cyclisme est bon pour la santé." },
+                { word: "prévoir", type: "verbe", definition: "Penser à l'avance", exemple: "Il faut prévoir les activités des vacances." },
+                { word: "rejoindre", type: "verbe", definition: "Aller retrouver", exemple: "Je vais rejoindre mes cousins à la plage." },
+                { word: "pratiquer", type: "verbe", definition: "Faire une activité", exemple: "Je pratique la natation en vacances." },
+                { word: "meilleur / meilleure", type: "adjectif", definition: "Plus bon que les autres", exemple: "C'est le meilleur moment de l'année." },
+                { word: "montagnard", type: "adjectif", definition: "De la montagne", exemple: "Ce village montagnard est très joli." },
+                { word: "là-bas", type: "invariable", definition: "À cet endroit loin", exemple: "Regarde là-bas, il y a la mer !" },
+                { word: "particulièrement", type: "invariable", definition: "Spécialement", exemple: "J'aime particulièrement la plage." }
+            ]},
+            7: { theme: "Les vacances (suite)", words: [
+                { word: "les copains", type: "determinant+nom", definition: "Amis", exemple: "Je joue avec mes copains tous les jours." },
+                { word: "les cabanes", type: "determinant+nom", definition: "Petites maisons pour jouer", exemple: "On construit des cabanes dans les arbres." },
+                { word: "un après-midi", type: "determinant+nom", definition: "Entre midi et le soir", exemple: "L'après-midi, on va à la piscine." },
+                { word: "un maillot de bain", type: "determinant+nom", definition: "Vêtement pour nager", exemple: "N'oublie pas ton maillot de bain !" },
+                { word: "une piscine", type: "determinant+nom", definition: "Bassin pour nager", exemple: "La piscine est ouverte tout l'été." },
+                { word: "une carte postale", type: "determinant+nom", definition: "Carte qu'on envoie en vacances", exemple: "J'envoie une carte postale à mamie." },
+                { word: "les cousins / les cousines", type: "determinant+nom", definition: "Enfants de l'oncle ou la tante", exemple: "Mes cousins viennent en vacances chez nous." },
+                { word: "le goûter", type: "determinant+nom", definition: "Petit repas de l'après-midi", exemple: "Au goûter, on mange des fruits." },
+                { word: "essayer", type: "verbe", definition: "Faire pour voir", exemple: "Je veux essayer le surf cet été." },
+                { word: "envoyer", type: "verbe", definition: "Faire partir", exemple: "Je vais envoyer un message à mes amis." },
+                { word: "avoir hâte", type: "verbe", definition: "Être pressé", exemple: "J'ai hâte d'être en vacances !" },
+                { word: "chez", type: "invariable", definition: "À la maison de", exemple: "Je dors chez ma grand-mère." },
+                { word: "bientôt", type: "invariable", definition: "Dans peu de temps", exemple: "Les vacances arrivent bientôt !" },
+                { word: "beaucoup", type: "invariable", definition: "En grande quantité", exemple: "Je m'amuse beaucoup en vacances." }
+            ]}
+        }
+    }
+};
+
+const gamesConfig = [
+    { id: "pendu", name: "Jeu du pendu", icon: "🎯", instruction: "Clique sur les lettres pour deviner le mot !" },
+    { id: "memory", name: "Memory", icon: "🃏", instruction: "Retrouve les paires mot + définition !" },
+    { id: "course", name: "Course de mots", icon: "🏃", instruction: "Tape le mot avant la fin du temps !" },
+    { id: "anagramme", name: "Mots mélangés", icon: "🔀", instruction: "Remets les lettres dans l'ordre !" },
+    { id: "qcm", name: "Dictée flash", icon: "✏️", instruction: "Choisis la bonne orthographe !" },
+    { id: "nature", name: "Nature du mot", icon: "🏷️", instruction: "Nom, verbe, adjectif ou invariable ?" },
+    { id: "croises", name: "Mots croisés", icon: "📝", instruction: "Remplis la grille !" },
+    { id: "attrape", name: "Attrape-mot", icon: "🎮", instruction: "Clique sur les mots de la dictée !" }
+];
+
+let currentState = { page: 'home', period: null, week: null, game: null, level: 1 };
+let gameState = {};
+
+// ==================== NAVIGATION ====================
+function goHome() { currentState = { page: 'home', period: null, week: null, game: null, level: 1 }; renderPage(); }
+function goToPeriod(p) { if (!periodsData[p].available) return; currentState = { page: 'period', period: p, week: null, game: null, level: 1 }; renderPage(); }
+function goToWeek(w) { currentState.page = 'week'; currentState.week = w; currentState.game = null; renderPage(); }
+function goToGame(g) { currentState.page = 'game'; currentState.game = g; currentState.level = 1; initGame(); renderPage(); }
+function setLevel(l) { currentState.level = l; initGame(); renderPage(); }
+
+// ==================== RENDU ====================
+function renderPage() {
+    const main = document.getElementById('main-content');
+    updateBreadcrumb();
+    switch(currentState.page) {
+        case 'home': renderHomePage(main); break;
+        case 'period': renderPeriodPage(main); break;
+        case 'week': renderWeekPage(main); break;
+        case 'game': renderGamePage(main); break;
+    }
+}
+
+function updateBreadcrumb() {
+    const bc = document.getElementById('breadcrumb');
+    let html = '<span class="breadcrumb-item" onclick="goHome()">🏠 Accueil</span>';
+    if (currentState.period) {
+        html += `<span class="breadcrumb-separator">›</span><span class="breadcrumb-item" onclick="goToPeriod(${currentState.period})">${periodsData[currentState.period].icon} P${currentState.period}</span>`;
+    }
+    if (currentState.week) {
+        html += `<span class="breadcrumb-separator">›</span><span class="breadcrumb-item" onclick="goToWeek(${currentState.week})">S${currentState.week}</span>`;
+    }
+    if (currentState.game) {
+        const g = gamesConfig.find(x => x.id === currentState.game);
+        html += `<span class="breadcrumb-separator">›</span><span class="breadcrumb-item">${g.icon}</span>`;
+    }
+    bc.innerHTML = html;
+}
+
+function renderHomePage(c) {
+    c.innerHTML = `
+        <div class="welcome-message">
+            <div class="welcome-icon">📖✨</div>
+            <h2>Bienvenue !</h2>
+            <p>Choisis ta période puis ta semaine pour réviser.</p>
+        </div>
+        
+        <div class="method-card" id="method-toggle" onclick="toggleMethod()">
+            <h3><span>📚</span> Comment apprendre mes mots de dictée ? <span class="arrow">▼</span></h3>
+            <div class="subtitle">Clique pour découvrir la méthode en 8 étapes</div>
+        </div>
+        
+        <div class="method-content" id="method-content">
+            <div class="method-step">
+                <div class="step-icon">🔍</div>
+                <div class="step-content">
+                    <div class="step-title">1. Je repère la difficulté</div>
+                    <div class="step-text">Je lis le mot doucement et je cherche ce qui est difficile : lettre muette, double consonne, son spécial…</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">✅</div>
+                <div class="step-content">
+                    <div class="step-title">2. J'épelle et j'écris en regardant</div>
+                    <div class="step-text">J'épelle le mot à voix haute, puis je l'écris une première fois en regardant le modèle. Je vérifie lettre par lettre.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">🙈</div>
+                <div class="step-content">
+                    <div class="step-title">3. J'écris de mémoire</div>
+                    <div class="step-text">Je cache le mot et j'essaie de l'écrire de mémoire, puis je compare avec le modèle et je corrige si besoin.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">🎨</div>
+                <div class="step-content">
+                    <div class="step-title">4. Je surligne la partie difficile</div>
+                    <div class="step-text">Je surligne ou entoure en couleur la partie difficile du mot pour attirer mon attention.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">☝️</div>
+                <div class="step-content">
+                    <div class="step-title">5. J'utilise mon corps</div>
+                    <div class="step-text">J'écris le mot en grand avec mon doigt dans l'air ou sur la table, en disant les lettres.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">👨‍👩‍👧‍👦</div>
+                <div class="step-content">
+                    <div class="step-title">6. Je demande une dictée d'entraînement</div>
+                    <div class="step-text">Je demande à quelqu'un de me dicter les mots (parent, frère, sœur, camarade) sur une ardoise ou un cahier d'essai. Je recommence jusqu'à écrire chaque mot trois fois sans erreur.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">🧠</div>
+                <div class="step-content">
+                    <div class="step-title">7. Je révise un peu chaque jour</div>
+                    <div class="step-text">Je relis tous les mots plusieurs jours avant la dictée (un peu chaque jour plutôt que tout d'un coup) pour que mon cerveau les garde en mémoire.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">💭</div>
+                <div class="step-content">
+                    <div class="step-title">8. Je m'explique le mot</div>
+                    <div class="step-text">Je réfléchis à son sens, un mot de la même famille ou une phrase avec ce mot, pour mieux le retenir.</div>
+                </div>
+            </div>
+            
+            <div class="method-reminder">
+                <h4>⚠️ Petit rappel pour le jour de la dictée ⚠️</h4>
+                <ul>
+                    <li>Relis la phrase entière avant d'écrire.</li>
+                    <li>Pense aux accords (verbe, nom, adjectif).</li>
+                    <li>Relis-toi lentement en suivant chaque mot avec ton doigt.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section-title"><h2>Choisis ta période</h2></div>
+        <div class="periods-grid">
+            ${Object.entries(periodsData).map(([n, p]) => `
+                <div class="period-card ${p.available ? '' : 'disabled'}" data-period="${n}" onclick="${p.available ? `goToPeriod(${n})` : ''}">
+                    <div class="icon">${p.icon}</div>
+                    <h3>${p.name}</h3>
+                    <div class="subtitle">${p.available ? Object.keys(p.weeks).length + ' semaines' : ''}</div>
+                    ${!p.available ? '<span class="coming-soon-badge">Bientôt</span>' : ''}
+                </div>
+            `).join('')}
+        </div>`;
+}
+
+function toggleMethod() {
+    var card = document.getElementById('method-toggle');
+    var content = document.getElementById('method-content');
+    if (content.classList.contains('visible')) {
+        content.classList.remove('visible');
+        card.classList.remove('open');
+    } else {
+        content.classList.add('visible');
+        card.classList.add('open');
+    }
+}
+
+function renderPeriodPage(c) {
+    const p = periodsData[currentState.period];
+    const weekIcons = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+    c.innerHTML = `
+        <div class="section-title"><h2>${p.icon} ${p.name}</h2><p>Choisis ta semaine</p></div>
+        <div class="weeks-grid">
+            ${Object.entries(p.weeks).map(([n, w]) => `
+                <div class="week-card" onclick="goToWeek(${n})">
+                    <div class="icon">${weekIcons[n-1] || '📅'}</div>
+                    <h4>Semaine ${n}</h4>
+                    <div class="theme">${w.theme}</div>
+                </div>
+            `).join('')}
+        </div>`;
+}
+
+function renderWeekPage(c) {
+    const p = periodsData[currentState.period], w = p.weeks[currentState.week];
+    c.innerHTML = `
+        <div class="section-title"><h2>${p.icon} Période ${currentState.period} - Semaine ${currentState.week}</h2><p>Thème : ${w.theme}</p></div>
+        
+        <div class="fiche-card" id="fiche-toggle" onclick="toggleFiche()">
+            <h3><span>📋</span> Fiche des mots à apprendre <span class="arrow">▼</span></h3>
+            <div class="subtitle">Clique pour voir les ${w.words.length} mots de la semaine</div>
+        </div>
+        
+        <div class="fiche-content" id="fiche-content">
+            <p style="text-align:center; color:var(--text-medium); margin-bottom:15px; font-size:0.95rem;">👆 Clique sur un mot pour voir un exemple</p>
+            <table class="words-table">
+                <thead><tr><th>Mot</th><th>Nature</th><th>Définition</th></tr></thead>
+                <tbody>${w.words.map((x, i) => `<tr>
+                    <td>
+                        <strong class="word-clickable" onclick="toggleExemple(event, ${i})">${x.word}</strong>
+                        <div class="exemple-box" id="exemple-${i}">${x.exemple || ''}</div>
+                    </td>
+                    <td>${formatTypes(x.type)}</td>
+                    <td>${x.definition}</td>
+                </tr>`).join('')}</tbody>
+            </table>
+        </div>
+        
+        <div class="section-title" style="margin-top:10px;"><h2>🎮 Choisis un jeu</h2></div>
+        <div class="games-grid">
+            ${gamesConfig.map(g => `<div class="game-card" onclick="goToGame('${g.id}')"><div class="icon">${g.icon}</div><h4>${g.name}</h4></div>`).join('')}
+        </div>`;
+}
+
+function toggleFiche() {
+    var card = document.getElementById('fiche-toggle');
+    var content = document.getElementById('fiche-content');
+    if (content.classList.contains('visible')) {
+        content.classList.remove('visible');
+        card.classList.remove('open');
+    } else {
+        content.classList.add('visible');
+        card.classList.add('open');
+    }
+}
+
+function toggleExemple(event, index) {
+    event.stopPropagation();
+    var box = document.getElementById('exemple-' + index);
+    if (box) {
+        if (box.classList.contains('visible')) {
+            box.classList.remove('visible');
+        } else {
+            var allBoxes = document.querySelectorAll('.exemple-box');
+            for (var i = 0; i < allBoxes.length; i++) {
+                allBoxes[i].classList.remove('visible');
+            }
+            box.classList.add('visible');
+        }
+    }
+}
+
+function formatType(t) { 
+    const labels = {nom:'Nom',verbe:'Verbe',adjectif:'Adjectif',invariable:'Invariable',determinant:'Dét.'};
+    return labels[t] || t; 
+}
+
+function formatTypes(types) {
+    if (!types) return '';
+    var typeArray = types.split('+');
+    var html = '<div class="types-container">';
+    for (var i = 0; i < typeArray.length; i++) {
+        var t = typeArray[i].trim();
+        html += '<span class="word-type ' + t + '">' + formatType(t) + '</span>';
+    }
+    html += '</div>';
+    return html;
+}
+
+function renderGamePage(c) {
+    const g = gamesConfig.find(x => x.id === currentState.game);
+    c.innerHTML = `
+        <div class="game-page">
+            <div class="game-header">
+                <h2>${g.icon} ${g.name}</h2>
+                <div class="game-instruction">${g.instruction}</div>
+                <div class="level-selector">
+                    <button class="level-btn level-1 ${currentState.level===1?'active':''}" onclick="setLevel(1)">⭐ Niveau 1</button>
+                    <button class="level-btn level-2 ${currentState.level===2?'active':''}" onclick="setLevel(2)">⭐⭐ Niveau 2</button>
+                    <button class="level-btn level-3 ${currentState.level===3?'active':''}" onclick="setLevel(3)">⭐⭐⭐ Niveau 3</button>
+                </div>
+            </div>
+            <div class="game-area" id="game-area"></div>
+            <div style="text-align:center;"><button class="btn btn-back" onclick="goToWeek(${currentState.week})">← Retour</button></div>
+        </div>`;
+    renderGameContent();
+}
+
+// ==================== JEUX ====================
+function getCurrentWords() { return periodsData[currentState.period].weeks[currentState.week].words; }
+function getWordsForLevel(l) {
+    const w = getCurrentWords(), s = [...w].sort((a,b) => a.word.length - b.word.length);
+    if(l===1) return s.slice(0, Math.ceil(w.length*0.4));
+    if(l===2) return s.slice(Math.floor(w.length*0.2), Math.ceil(w.length*0.8));
+    return w;
+}
+function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function initGame() {
+    gameState = {};
+    const w = getWordsForLevel(currentState.level);
+    switch(currentState.game) {
+        case 'pendu': initPendu(w); break;
+        case 'memory': initMemory(w); break;
+        case 'course': initCourse(w); break;
+        case 'anagramme': initAnagramme(w); break;
+        case 'qcm': initQCM(w); break;
+        case 'nature': initNature(w); break;
+        case 'croises': initCroises(w); break;
+        case 'attrape': initAttrape(w); break;
+    }
+}
+
+function renderGameContent() {
+    const a = document.getElementById('game-area'); if(!a) return;
+    switch(currentState.game) {
+        case 'pendu': renderPendu(a); break;
+        case 'memory': renderMemory(a); break;
+        case 'course': renderCourse(a); break;
+        case 'anagramme': renderAnagramme(a); break;
+        case 'qcm': renderQCM(a); break;
+        case 'nature': renderNature(a); break;
+        case 'croises': renderCroises(a); break;
+        case 'attrape': renderAttrape(a); break;
+    }
+}
+
+// PENDU
+function initPendu(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    gameState = { word: word.word.toLowerCase(), def: word.definition, guessed: [], errors: 0, maxErrors: currentState.level===1?10:(currentState.level===2?7:5), won: false, lost: false };
+}
+function renderPendu(a) {
+    const {word,def,guessed,errors,maxErrors,won,lost} = gameState;
+    const display = word.split('').map(l => l===' '?' ':(l==='-'?'-':(guessed.includes(l)?l:'_'))).join('');
+    const lives = '❤️'.repeat(maxErrors-errors)+'🖤'.repeat(errors);
+    const alpha = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    a.innerHTML = `
+        <div class="hangman-lives">${lives}</div>
+        <div style="color:var(--text-medium);margin-bottom:8px;font-style:italic;font-size:0.95rem;">💡 ${def}</div>
+        <div class="hangman-word">${display}</div>
+        ${won?'<div class="feedback success">🎉 Bravo !</div>':''}
+        ${lost?`<div class="feedback error">😢 C'était : <strong>${word}</strong></div>`:''}
+        <div class="keyboard">
+            ${alpha.map(l => `<button class="key-btn ${guessed.includes(l)?(word.includes(l)?'correct':'wrong'):''}" onclick="guessPendu('${l}')" ${guessed.includes(l)||won||lost?'disabled':''}>${l}</button>`).join('')}
+        </div>
+        ${won||lost?`<button class="btn btn-primary" style="margin-top:18px;" onclick="initGame();renderGameContent();">🔄 Nouveau mot</button>`:''}`;
+}
+function guessPendu(l) {
+    if(gameState.guessed.includes(l)||gameState.won||gameState.lost) return;
+    gameState.guessed.push(l);
+    if(!gameState.word.includes(l)) gameState.errors++;
+    const allFound = gameState.word.split('').every(c => c===' '||c==='-'||gameState.guessed.includes(c));
+    if(allFound) gameState.won=true;
+    else if(gameState.errors>=gameState.maxErrors) gameState.lost=true;
+    renderGameContent();
+}
+
+// MEMORY
+function initMemory(w) {
+    const n = currentState.level===1?4:(currentState.level===2?6:8);
+    const sel = shuffle(w).slice(0,n);
+    const cards = [];
+    sel.forEach((x,i) => { cards.push({id:i*2,type:'word',content:x.word,pairId:i}); cards.push({id:i*2+1,type:'def',content:x.definition,pairId:i}); });
+    gameState = { cards: shuffle(cards), flipped: [], matched: [], moves: 0 };
+}
+function renderMemory(a) {
+    const {cards,flipped,matched,moves} = gameState;
+    const done = matched.length===cards.length/2;
+    a.innerHTML = `
+        <div class="score-display">Coups: ${moves} | Paires: ${matched.length}/${cards.length/2}</div>
+        ${done?'<div class="feedback success">🎉 Bravo !</div>':''}
+        <div class="memory-grid" style="grid-template-columns:repeat(${cards.length<=8?4:4},1fr);">
+            ${cards.map(c => `<div class="memory-card ${flipped.includes(c.id)||matched.includes(c.pairId)?'flipped':''} ${matched.includes(c.pairId)?'matched':''}" onclick="flipMemory(${c.id})"><span class="card-back">❓</span><span class="card-content">${c.content}</span></div>`).join('')}
+        </div>
+        ${done?`<button class="btn btn-primary" style="margin-top:18px;" onclick="initGame();renderGameContent();">🔄 Rejouer</button>`:''}`;
+}
+function flipMemory(id) {
+    if(gameState.flipped.length>=2) return;
+    if(gameState.flipped.includes(id)) return;
+    const card = gameState.cards.find(c=>c.id===id);
+    if(gameState.matched.includes(card.pairId)) return;
+    gameState.flipped.push(id);
+    renderGameContent();
+    if(gameState.flipped.length===2) {
+        gameState.moves++;
+        const [a,b] = gameState.flipped;
+        const ca = gameState.cards.find(c=>c.id===a), cb = gameState.cards.find(c=>c.id===b);
+        if(ca.pairId===cb.pairId) { gameState.matched.push(ca.pairId); gameState.flipped=[]; renderGameContent(); }
+        else { setTimeout(()=>{ gameState.flipped=[]; renderGameContent(); },1200); }
+    }
+}
+
+// COURSE
+function initCourse(w) {
+    const displayTime = currentState.level===1?8:(currentState.level===2?5:3);
+    gameState = { words:shuffle(w), idx:0, score:0, displayTime:displayTime, showingWord:false, canType:false, running:false, finished:false, pos:5, currentWord:'' };
+}
+function renderCourse(a) {
+    const {words,idx,score,displayTime,showingWord,canType,running,finished,pos,timeLeft} = gameState;
+    const cur = words[idx];
+    const levelText = currentState.level===1?'Mémorise le mot (8s) puis écris-le':(currentState.level===2?'Mémorise le mot (5s) puis écris-le vite !':'Mémorise le mot (3s) puis écris-le très vite !');
+    a.innerHTML = `
+        ${!running&&!finished?`<div style="text-align:center;"><div style="font-size:3.5rem;margin-bottom:18px;">🏃</div><p style="font-size:1.1rem;margin-bottom:18px;">${levelText}</p><button class="btn btn-primary" onclick="startCourse()">▶️ Commencer</button></div>`:''}
+        ${running?`
+            <div class="score-display">Score: ${score}/${words.length}</div>
+            <div class="race-track"><span class="race-runner" style="left:${pos}%;">🏃</span><span class="race-finish">🏁</span></div>
+            ${showingWord?`
+                <div class="race-timer">👀 Mémorise : ${timeLeft}s</div>
+                <div class="race-word">${cur.word}</div>
+                <div style="color:var(--text-medium);margin-top:10px;">💡 ${cur.definition}</div>
+            `:`
+                ${currentState.level===1?'<div style="color:var(--success);font-size:1.1rem;margin-bottom:10px;">✏️ Écris le mot (pas de limite de temps)</div>':'<div class="race-timer">⏱️ ${timeLeft}s</div>'}
+                <div style="color:var(--text-medium);margin-bottom:15px;">💡 ${cur.definition}</div>
+                <input type="text" class="race-input" id="race-input" placeholder="Tape le mot..." oninput="checkCourse(this.value)" autocomplete="off">
+            `}
+        `:''}
+        ${finished?`<div class="feedback ${score>=words.length*0.6?'success':'info'}">${score>=words.length*0.6?'🎉':'👏'} Score: ${score}/${words.length}</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Rejouer</button>`:''}`;
+    if(running && canType) document.getElementById('race-input')?.focus();
+}
+function startCourse() {
+    gameState.running=true; 
+    gameState.showingWord=true;
+    gameState.canType=false;
+    gameState.timeLeft=gameState.displayTime;
+    renderGameContent();
+    // Phase 1: Afficher le mot pendant displayTime secondes
+    gameState.timer = setInterval(()=>{
+        gameState.timeLeft--;
+        gameState.pos=5+(gameState.displayTime-gameState.timeLeft)/gameState.displayTime*40;
+        if(gameState.timeLeft<=0) {
+            clearInterval(gameState.timer);
+            // Phase 2: Cacher le mot et permettre l'écriture
+            gameState.showingWord=false;
+            gameState.canType=true;
+            if(currentState.level===1) {
+                // Niveau 1: pas de limite de temps pour écrire
+                gameState.timeLeft=null;
+                renderGameContent();
+            } else {
+                // Niveaux 2 et 3: temps limité (5s ou 3s)
+                const writeTime = currentState.level===2?5:3;
+                gameState.timeLeft=writeTime;
+                renderGameContent();
+                gameState.timer = setInterval(()=>{
+                    gameState.timeLeft--;
+                    gameState.pos=45+(writeTime-gameState.timeLeft)/writeTime*45;
+                    if(gameState.timeLeft<=0) nextCourse();
+                    else renderGameContent();
+                },1000);
+            }
+        } else renderGameContent();
+    },1000);
+}
+function checkCourse(v) { if(gameState.canType && v.toLowerCase().trim()===gameState.words[gameState.idx].word.toLowerCase()) { gameState.score++; nextCourse(); } }
+function nextCourse() {
+    clearInterval(gameState.timer); gameState.idx++; gameState.pos=5;
+    if(gameState.idx>=gameState.words.length) { gameState.running=false; gameState.finished=true; renderGameContent(); }
+    else { 
+        gameState.showingWord=true;
+        gameState.canType=false;
+        gameState.timeLeft=gameState.displayTime;
+        renderGameContent(); 
+        clearInterval(gameState.timer);
+        startCourse(); 
+    }
+}
+
+// ANAGRAMME
+function initAnagramme(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    let letters = word.word.toLowerCase().replace(/\s/g,'').split('');
+    const traps = [];
+    if(currentState.level===3) { const al='aeiounrstl'; for(let i=0;i<2;i++) traps.push(al[Math.floor(Math.random()*al.length)]); }
+    gameState = { word:word.word.toLowerCase().replace(/\s/g,''), def:word.definition, letters:shuffle([...letters,...traps]), answer:[], usedIdx:[], won:false };
+}
+function renderAnagramme(a) {
+    const {word,def,letters,answer,usedIdx,won} = gameState;
+    a.innerHTML = `
+        <div style="color:var(--text-medium);margin-bottom:15px;">💡 ${def}</div>
+        ${currentState.level===3?'<div style="color:var(--danger);font-size:0.85rem;">⚠️ Attention aux lettres pièges !</div>':''}
+        <div class="answer-zone">${answer.map((l,i)=>`<div class="answer-letter" onclick="removeAna(${i})">${l}</div>`).join('')}</div>
+        <div class="anagram-letters">${letters.map((l,i)=>`<div class="letter-tile ${usedIdx.includes(i)?'used':''}" onclick="addAna('${l}',${i})">${l}</div>`).join('')}</div>
+        ${won?'<div class="feedback success">🎉 Bravo !</div>':''}
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;">
+            <button class="btn btn-secondary" onclick="clearAna()">🗑️ Effacer</button>
+            <button class="btn btn-primary" onclick="checkAna()">✓ Vérifier</button>
+        </div>
+        ${won?`<button class="btn btn-primary" style="margin-top:12px;" onclick="initGame();renderGameContent();">🔄 Nouveau mot</button>`:''}`;
+}
+function addAna(l,i) { if(gameState.usedIdx.includes(i)) return; gameState.answer.push(l); gameState.usedIdx.push(i); renderGameContent(); }
+function removeAna(i) { const l=gameState.answer[i]; gameState.answer.splice(i,1); const li=gameState.usedIdx.find(x=>gameState.letters[x]===l); gameState.usedIdx=gameState.usedIdx.filter(x=>x!==li); renderGameContent(); }
+function clearAna() { gameState.answer=[]; gameState.usedIdx=[]; renderGameContent(); }
+function checkAna() { if(gameState.answer.join('')===gameState.word) gameState.won=true; renderGameContent(); }
+
+// QCM
+function initQCM(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    const dist = genDistractors(word.word,currentState.level);
+    gameState = { word:word, options:shuffle([word.word,...dist]), selected:null, correct:false };
+}
+function genDistractors(w,l) {
+    const d=[], x=w.toLowerCase();
+    if(l===1) { d.push(x.split('').reverse().join('')); d.push(x.slice(0,Math.ceil(x.length/2))+'xx'); }
+    else if(l===2) { d.push(x.replace('ou','u')); d.push(x+'s'); }
+    else { d.push(x.replace(/([aeiou])/i,m=>m==='a'?'e':'a')); d.push(x.replace('s','ss')); }
+    while(d.length<2) d.push(x+'e');
+    return d.slice(0,2).filter(y=>y!==x);
+}
+function renderQCM(a) {
+    const {word,options,selected,correct} = gameState;
+    a.innerHTML = `
+        <div style="color:var(--text-medium);margin-bottom:12px;font-style:italic;">💡 ${word.definition}</div>
+        <div class="qcm-sentence">Quel est le bon mot ?</div>
+        <div class="qcm-options">
+            ${options.map((o,i)=>`<div class="qcm-option ${selected===i?(o===word.word?'correct':'wrong'):''}" onclick="selectQCM(${i},'${o}')" ${selected!==null?'style="pointer-events:none;"':''}>${o}</div>`).join('')}
+        </div>
+        ${selected!==null?`<div class="feedback ${correct?'success':'error'}">${correct?'🎉 Bravo !':'😢 C\'était : <strong>'+word.word+'</strong>'}</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Suivant</button>`:''}`;
+}
+function selectQCM(i,o) { gameState.selected=i; gameState.correct=o===gameState.word.word; renderGameContent(); }
+
+// NATURE
+function initNature(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    let opts = currentState.level===1?['nom','verbe']:(currentState.level===2?['nom','verbe','adjectif']:['nom','verbe','adjectif','invariable']);
+    gameState = { word:word, options:opts, selected:null, correct:false };
+}
+function renderNature(a) {
+    const {word,options,selected,correct} = gameState;
+    const labels = {nom:'Nom',verbe:'Verbe',adjectif:'Adjectif',invariable:'Invariable'};
+    a.innerHTML = `
+        <div class="quiz-word">${word.word}</div>
+        <div style="color:var(--text-medium);margin-bottom:25px;">${word.definition}</div>
+        <div class="nature-options">
+            ${options.map(o=>`<button class="nature-btn ${o} ${selected===o?(o===word.type?'correct':'wrong'):''}" onclick="selectNature('${o}')" ${selected!==null?'disabled':''}>${labels[o]}</button>`).join('')}
+        </div>
+        ${selected!==null?`<div class="feedback ${correct?'success':'error'}">${correct?'🎉 Bravo !':'😢 C\'est un <strong>'+formatType(word.type)+'</strong>'}</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Suivant</button>`:''}`;
+}
+function selectNature(t) { gameState.selected=t; gameState.correct=t===gameState.word.type; renderGameContent(); }
+
+// MOTS CROISES
+function initCroises(w) {
+    const short = w.filter(x=>x.word.length<=8&&!x.word.includes(' '));
+    const sel = shuffle(short).slice(0, currentState.level===1?3:(currentState.level===2?4:5));
+    const grid = Array(12).fill(null).map(()=>Array(12).fill(null));
+    const clues = {across:[],down:[]};
+    let row=1,col=1;
+    sel.forEach((x,i) => {
+        const wd = x.word.toLowerCase();
+        if(i%2===0) { for(let j=0;j<wd.length;j++) grid[row][col+j]={letter:wd[j],given:currentState.level===1&&j===0}; clues.across.push({num:i+1,clue:x.definition,row,col}); row+=2; }
+        else { for(let j=0;j<wd.length;j++) grid[row+j][col]={letter:wd[j],given:currentState.level===1&&j===0}; clues.down.push({num:i+1,clue:x.definition,row,col}); col+=3; }
+    });
+    gameState = { grid, clues, userInput:{}, won:false };
+}
+function renderCroises(a) {
+    const {grid,clues,userInput,won} = gameState;
+    let minR=12,maxR=0,minC=12,maxC=0;
+    grid.forEach((r,ri)=>r.forEach((c,ci)=>{if(c){minR=Math.min(minR,ri);maxR=Math.max(maxR,ri);minC=Math.min(minC,ci);maxC=Math.max(maxC,ci);}}));
+    a.innerHTML = `
+        <div class="crossword-container">
+            <div class="crossword-grid" style="grid-template-columns:repeat(${maxC-minC+1},36px);">
+                ${grid.slice(minR,maxR+1).map((r,ri)=>r.slice(minC,maxC+1).map((c,ci)=>{
+                    if(!c) return '<div class="crossword-cell blocked"></div>';
+                    const k=`${ri+minR}-${ci+minC}`, v=c.given?c.letter:(userInput[k]||'');
+                    return `<input type="text" class="crossword-cell ${c.given?'given':''}" maxlength="1" value="${v}" ${c.given?'readonly':''} oninput="updateCroises('${k}',this.value)">`;
+                }).join('')).join('')}
+            </div>
+            <div class="crossword-clues">
+                <div class="clue-group"><h4>→ Horizontal</h4>${clues.across.map(c=>`<div class="clue-item">${c.num}. ${c.clue}</div>`).join('')}</div>
+                <div class="clue-group"><h4>↓ Vertical</h4>${clues.down.map(c=>`<div class="clue-item">${c.num}. ${c.clue}</div>`).join('')}</div>
+            </div>
+            <button class="btn btn-primary" onclick="checkCroises()">✓ Vérifier</button>
+            ${won?`<div class="feedback success">🎉 Bravo !</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Nouvelle grille</button>`:''}
+        </div>`;
+}
+function updateCroises(k,v) { gameState.userInput[k]=v.toLowerCase(); }
+function checkCroises() {
+    let ok=true;
+    gameState.grid.forEach((r,ri)=>r.forEach((c,ci)=>{if(c&&!c.given){const k=`${ri}-${ci}`;if(gameState.userInput[k]?.toLowerCase()!==c.letter)ok=false;}}));
+    if(ok) gameState.won=true;
+    renderGameContent();
+}
+
+// ATTRAPE-MOT
+function initAttrape(w) {
+    const dw = w.map(x => x.word);
+    const intruders = genIntruders(dw, currentState.level);
+    gameState = { 
+        dictWords: dw, 
+        allWords: shuffle([...dw, ...intruders]), 
+        falling: [], 
+        score: 0, 
+        errors: 0, 
+        timeLeft: 30, 
+        running: false, 
+        finished: false, 
+        speed: currentState.level === 1 ? 2000 : (currentState.level === 2 ? 1500 : 1000), 
+        wordId: 0 
+    };
+}
+function genIntruders(dw, l) {
+    const common = ['maison', 'table', 'chaise', 'livre', 'arbre', 'fleur', 'chat', 'chien', 'soleil', 'lune', 'pomme', 'orange', 'voiture', 'avion', 'train', 'école', 'jardin', 'fenêtre', 'porte', 'route'];
+    if (l === 1) return shuffle(common).slice(0, dw.length);
+    const intr = [];
+    dw.forEach(x => {
+        if (x.length > 2) intr.push(x.slice(0, -1) + 'e');
+        intr.push(x + 's');
+    });
+    intr.push(...shuffle(common).slice(0, 4));
+    return shuffle(intr).slice(0, dw.length);
+}
+function renderAttrape(a) {
+    if (!gameState.running && !gameState.finished) {
+        a.innerHTML = '<div style="text-align:center;"><div style="font-size:3.5rem;margin-bottom:18px;">🎮</div><p style="font-size:1.1rem;margin-bottom:8px;">Clique sur les mots de la dictée !</p><p style="color:var(--text-medium);margin-bottom:18px;">Évite les intrus !</p><button class="btn btn-primary" onclick="startAttrape()">▶️ Jouer</button></div>';
+    } else if (gameState.finished) {
+        a.innerHTML = '<div class="feedback ' + (gameState.score >= 5 ? 'success' : 'info') + '">' + (gameState.score >= 5 ? '🎉' : '👏') + ' Score: ' + gameState.score + ' ✅ | ' + gameState.errors + ' ❌</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Rejouer</button>';
+    } else {
+        a.innerHTML = '<div class="catch-game" id="catch-game"><div class="catch-timer">⏱️ ' + gameState.timeLeft + 's</div><div class="catch-score">✅ ' + gameState.score + ' | ❌ ' + gameState.errors + '</div></div>';
+    }
+}
+
+function attrapeClickHandler(e) {
+    var target = e.target;
+    if (!target.classList.contains('falling-word')) return;
+    if (target.getAttribute('data-clicked') === 'true') return;
+    
+    var word = target.getAttribute('data-word');
+    var id = parseInt(target.getAttribute('data-id'));
+    
+    target.setAttribute('data-clicked', 'true');
+    
+    if (gameState.dictWords.indexOf(word) >= 0) {
+        gameState.score++;
+        target.className = 'falling-word correct';
+    } else {
+        gameState.errors++;
+        target.className = 'falling-word wrong';
+    }
+    
+    var scoreEl = document.querySelector('.catch-score');
+    if (scoreEl) scoreEl.innerText = '✅ ' + gameState.score + ' | ❌ ' + gameState.errors;
+    
+    gameState.falling = gameState.falling.filter(function(f) { return f.id !== id; });
+    
+    setTimeout(function() {
+        if (target.parentNode) target.parentNode.removeChild(target);
+    }, 250);
+}
+
+function startAttrape() {
+    gameState.running = true;
+    gameState.timeLeft = 30;
+    gameState.falling = [];
+    gameState.wordId = 0;
+    gameState.score = 0;
+    gameState.errors = 0;
+    
+    var area = document.getElementById('game-area');
+    area.innerHTML = '<div class="catch-game" id="catch-game"><div class="catch-timer">⏱️ 30s</div><div class="catch-score">✅ 0 | ❌ 0</div></div>';
+    
+    var container = document.getElementById('catch-game');
+    container.addEventListener('click', attrapeClickHandler);
+    
+    gameState.mainTimer = setInterval(function() {
+        gameState.timeLeft--;
+        var timer = document.querySelector('.catch-timer');
+        if (timer) timer.innerText = '⏱️ ' + gameState.timeLeft + 's';
+        if (gameState.timeLeft <= 0) endAttrape();
+    }, 1000);
+    
+    spawnAttrapeWord();
+    gameState.spawnTimer = setInterval(spawnAttrapeWord, gameState.speed);
+    
+    gameState.fallTimer = setInterval(function() {
+        var container = document.getElementById('catch-game');
+        if (!container) return;
+        
+        for (var i = 0; i < gameState.falling.length; i++) {
+            gameState.falling[i].y += 2;
+            var el = container.querySelector('[data-id="' + gameState.falling[i].id + '"]');
+            if (el) el.style.top = gameState.falling[i].y + 'px';
+        }
+        
+        gameState.falling = gameState.falling.filter(function(f) {
+            if (f.y > 330) {
+                var el = container.querySelector('[data-id="' + f.id + '"]');
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+                return false;
+            }
+            return true;
+        });
+    }, 50);
+}
+
+function spawnAttrapeWord() {
+    if (!gameState.running) return;
+    var container = document.getElementById('catch-game');
+    if (!container) return;
+    
+    var w = gameState.allWords[Math.floor(Math.random() * gameState.allWords.length)];
+    var id = gameState.wordId++;
+    
+    // Trouver une position X qui ne chevauche pas les mots existants en haut
+    var x;
+    var attempts = 0;
+    var minDistance = 25; // Distance minimum entre les mots (en %)
+    
+    do {
+        x = 5 + Math.random() * 65;
+        var tooClose = false;
+        
+        // Vérifier la distance avec les mots récents (y < 80px)
+        for (var i = 0; i < gameState.falling.length; i++) {
+            if (gameState.falling[i].y < 80) {
+                if (Math.abs(gameState.falling[i].x - x) < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+        }
+        
+        attempts++;
+        if (!tooClose || attempts > 10) break;
+    } while (true);
+    
+    var div = document.createElement('div');
+    div.className = 'falling-word';
+    div.innerText = w;
+    div.setAttribute('data-word', w);
+    div.setAttribute('data-id', id);
+    div.style.left = x + '%';
+    div.style.top = '0px';
+    
+    container.appendChild(div);
+    gameState.falling.push({ id: id, word: w, x: x, y: 0 });
+}
+function endAttrape() {
+    clearInterval(gameState.mainTimer);
+    clearInterval(gameState.spawnTimer);
+    clearInterval(gameState.fallTimer);
+    gameState.running = false;
+    gameState.finished = true;
+    renderGameContent();
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded', renderPage);
+    </script>
+</body>
+</html>
